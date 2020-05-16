@@ -6,7 +6,6 @@
 #include <cmath>
 #include <cmath>
 #include <algorithm>
-#include <optional>
 #include <memory>
 
 class Graph
