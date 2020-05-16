@@ -7,6 +7,7 @@
 #include <cmath>
 #include <algorithm>
 #include <optional>
+#include <memory>
 
 class Graph
 {
@@ -35,7 +36,7 @@ public:
     Graph(Image const& image, Image const& imageHelper);
     bool push(unsigned int i, unsigned int j);
     void relabel(unsigned int i, unsigned int j);
-    std::optional<std::pair<unsigned int, unsigned int>> isActive();
+    std::shared_ptr<std::pair<unsigned int, unsigned int>> isActive();
     std::vector<std::vector<unsigned int>> getSinkCapacityToNodes();
     std::vector<std::vector<unsigned int>> getSourceCapacityToNodes();
 };

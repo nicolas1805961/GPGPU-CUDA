@@ -268,7 +268,7 @@ void Graph::relabel(unsigned int i, unsigned int j)
     m_heights[i][j] = myHeight;
 }
 
-std::optional<std::pair<unsigned int, unsigned int>> Graph::isActive() 
+std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive() 
 {
     std::pair<unsigned int, unsigned int> pair;
     int count = 0;
@@ -284,9 +284,10 @@ std::optional<std::pair<unsigned int, unsigned int>> Graph::isActive()
             }
         }
     }
+    std::cout << count << "\n";
     if (count > 0)
-        return pair;
-    return std::nullopt;
+        return std::make_shared<std::pair<unsigned int, unsigned int>>(pair);
+    return nullptr;
 }
 
 std::vector<std::vector<unsigned int>> Graph::getSinkCapacityToNodes()
