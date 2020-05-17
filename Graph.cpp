@@ -1,18 +1,51 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.getWidth() * image.getHeight()), m_width(image.getWidth()), m_height(image.getHeight())
+Graph::Graph(Image const& image, Image const& imageHelper)
+    : m_maxHeight(image.getWidth() * image.getHeight())
+    , m_width(image.getWidth())
+    , m_height(image.getHeight())
 {
-    m_heights = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_excessFlow = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_bottomNeighbourCapacity = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_topNeighbourCapacity = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_leftNeighbourCapacity = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_rightNeighbourCapacity = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_sourceCapacityToNodes = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 1));
-    m_sinkCapacityFromNodes = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 1));
-    m_sinkCapacityToNodes = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
-    m_sourceCapacityFromNodes = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
+    m_heights = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_excessFlow = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_bottomNeighbourCapacity = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_topNeighbourCapacity = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_leftNeighbourCapacity = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_rightNeighbourCapacity = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_sourceCapacityToNodes = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 1)
+    );
+    m_sinkCapacityFromNodes = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 1)
+    );
+    m_sinkCapacityToNodes = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
+    m_sourceCapacityFromNodes = std::vector<std::vector<unsigned int>>(
+        m_height,
+        std::vector<unsigned int>(m_width, 0)
+    );
     /*m_leftNeighbourFlow = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
     m_rightNeighbourFlow = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
     m_topNeighbourFlow = std::vector<std::vector<unsigned int>>(m_height, std::vector<unsigned int>(m_width, 0));
@@ -24,18 +57,33 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     unsigned int y = 0;
     for (size_t j = 0; j < m_width; j++)
     {
+        // Filling bottom neighbour capacity
         for (size_t i = 0; i < m_height - 1; i++)
         {
-            x = sqrt(pow((image.getImage()[m_width * i * 3 + (j * 3)] - image.getImage()[m_width * ((i + 1) * 3) + (j * 3)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 1] - image.getImage()[m_width * ((i + 1) * 3) + (j * 3) + 1]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 2] - image.getImage()[m_width * ((i + 1) * 3) + (j * 3) + 2]), 2));
+            int arg1 = image.getImage()[m_width * i * 3 + (j * 3)]
+                - image.getImage()[m_width * ((i + 1) * 3) + (j * 3)];
+            int arg2 = image.getImage()[m_width * i * 3 + (j * 3) + 1]
+                - image.getImage()[m_width * ((i + 1) * 3) + (j * 3) + 1];
+            int arg3 = image.getImage()[m_width * i * 3 + (j * 3) + 2]
+                - image.getImage()[m_width * ((i + 1) * 3) + (j * 3) + 2];
+
+            x = sqrt(pow(arg1, 2) + pow(arg2, 2) + pow(arg3, 2));
             y = ((x / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
             /*if (y > max)
                 max = y;*/
             m_bottomNeighbourCapacity[i][j] = y;
         }
+        // Filling top neighbour capacity
         for (size_t i = 1; i < m_height; i++)
         {
+            int arg1 = image.getImage()[m_width * i * 3 + (j * 3)]
+                    - image.getImage()[m_width * ((i - 1) * 3) + (j * 3)];
+            int arg2 = image.getImage()[m_width * i * 3 + (j * 3) + 1]
+                    - image.getImage()[m_width * ((i - 1) * 3) + (j * 3) + 1];
+            int arg3 = image.getImage()[m_width * i * 3 + (j * 3) + 2]
+                    - image.getImage()[m_width * ((i - 1) * 3) + (j * 3) + 2];
 
-            x = sqrt(pow((image.getImage()[m_width * i * 3 + (j * 3)] - image.getImage()[m_width * ((i - 1) * 3) + (j * 3)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 1] - image.getImage()[m_width * ((i - 1) * 3) + (j * 3) + 1]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 2] - image.getImage()[m_width * ((i - 1) * 3) + (j * 3) + 2]), 2));
+            x = sqrt(pow(arg1, 2) + pow(arg2, 2) + pow(arg3, 2));
             y = ((x / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
             /*if (y > max)
                 max = y;*/
@@ -44,17 +92,33 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     }
     for (size_t i = 0; i < m_height; i++)
     {
+        // Filling left neighbour capacity
         for (size_t j = 1; j < m_width; j++)
         {
-            x = sqrt(pow((image.getImage()[m_width * i * 3 + (j * 3)] - image.getImage()[m_width * i * 3 + ((j * 3) - 3)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 1] - image.getImage()[m_width * i * 3 + ((j * 3) - 2)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 2] - image.getImage()[m_width * i * 3 + ((j * 3) - 1)]), 2));
+            int arg1 = image.getImage()[m_width * i * 3 + (j * 3)]
+                - image.getImage()[m_width * i * 3 + ((j * 3) - 3)];
+            int arg2 = image.getImage()[m_width * i * 3 + (j * 3) + 1]
+                - image.getImage()[m_width * i * 3 + ((j * 3) - 2)];
+            int arg3 = image.getImage()[m_width * i * 3 + (j * 3) + 2]
+                - image.getImage()[m_width * i * 3 + ((j * 3) - 1)];
+
+            x = sqrt(pow(arg1, 2) + pow(arg2, 2) + pow(arg3, 2));
             y = ((x / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
             /*if (y > max)
                 max = y;*/
             m_leftNeighbourCapacity[i][j] = y;
         }
+        // Filling right neighbour capacity
         for (size_t j = 0; j < m_width - 1; j++)
         {
-            x = sqrt(pow((image.getImage()[m_width * i * 3 + (j * 3)] - image.getImage()[m_width * i * 3 + ((j * 3) + 3)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 1] - image.getImage()[m_width * i * 3 + ((j * 3) + 4)]), 2) + pow((image.getImage()[m_width * i * 3 + (j * 3) + 2] - image.getImage()[m_width * i * 3 + ((j * 3) + 5)]), 2));
+            int arg1 = image.getImage()[m_width * i * 3 + (j * 3)]
+                - image.getImage()[m_width * i * 3 + ((j * 3) + 3)];
+            int arg2 = image.getImage()[m_width * i * 3 + (j * 3) + 1]
+                - image.getImage()[m_width * i * 3 + ((j * 3) + 4)];
+            int arg3 = image.getImage()[m_width * i * 3 + (j * 3) + 2]
+                - image.getImage()[m_width * i * 3 + ((j * 3) + 5)];
+
+            x = sqrt(pow(arg1, 2) + pow(arg2, 2) + pow(arg3, 2));
             y = ((x / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
             /*if (y > max)
                 max = y;*/
@@ -73,16 +137,24 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     auto ptrHelper = imageHelper.getImage();
     for (int i = 0; i < imageHelper.getHeight() * imageHelper.getWidth(); i++)
     {
-        if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 255)
-        {
+        if (
+                ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1]
+                && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2]
+                && ptrHelper[(i * 3)] == 255
+        ) {
             white.push_back(i * 3);
-            m_sourceCapacityToNodes[i / m_width][i % m_width] = 1000000; //sqrt(pow(255, 2) * 3);
+            m_sourceCapacityToNodes[i / m_width][i % m_width] = 1000000;
+            //sqrt(pow(255, 2) * 3);
             m_sinkCapacityFromNodes[i / m_width][i % m_width] = 0;
         }
-        else if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 0)
-        {
+        else if (
+                ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1]
+                && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2]
+                && ptrHelper[(i * 3)] == 0
+        ) {
             black.push_back(i * 3);
-            m_sinkCapacityFromNodes[i / m_width][i % m_width] = 1000000; //sqrt(pow(255, 2) * 3);
+            m_sinkCapacityFromNodes[i / m_width][i % m_width] = 1000000;
+            //sqrt(pow(255, 2) * 3);
             m_sourceCapacityToNodes[i / m_width][i % m_width] = 0;
         }
     }
@@ -119,7 +191,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
         histogamGreenBackground[i] /= black.size();
         histogamBlueBackground[i] /= black.size();
     }*/
-    
+
     for (size_t i = 0; i < white.size(); i++)
     {
         sumIntensityForegroundRed += ptr[white[i]];
@@ -147,20 +219,33 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
             uint8_t g = image.getImage()[m_width * (i * 3) + (j * 3) + 1];
             uint8_t b = image.getImage()[m_width * (i * 3) + (j * 3) + 2];
 
-            /*float pf = (histogamRedForeground[r] + histogamGreenForeground[g] + histogamBlueForeground[b]) / 3;
-            float pb = (histogamRedBackground[r] + histogamGreenBackground[g] + histogamBlueBackground[b]) / 3;*/
+            /*
+            float pf = (histogamRedForeground[r] + histogamGreenForeground[g]
+               + histogamBlueForeground[b]) / 3;
+            float pb = (histogamRedBackground[r] + histogamGreenBackground[g]
+               + histogamBlueBackground[b]) / 3;
+            */
 
-            float df = sqrt(pow(r - averageForegroundRed, 2) + pow(g - averageForegroundGreen, 2) + pow(b - averageForegroundBlue, 2));
-            float db = sqrt(pow(r - averageBackgroundRed, 2) + pow(g - averageBackgroundGreen, 2) + pow(b - averageBackgroundBlue, 2));
+            float df = sqrt(pow(r - averageForegroundRed, 2)
+                + pow(g - averageForegroundGreen, 2)
+                + pow(b - averageForegroundBlue, 2));
+            float db = sqrt(pow(r - averageBackgroundRed, 2)
+                + pow(g - averageBackgroundGreen, 2)
+                + pow(b - averageBackgroundBlue, 2));
 
             /*float pf = ((df / (sqrt(pow(255, 2) * 3))) - 1) * -1;
             float pb = ((db / (sqrt(pow(255, 2) * 3))) - 1) * -1;*/
             //float pf = df / (df + db);
             //float pb = db / (df + db);
-            if (m_sourceCapacityToNodes[i][j] == 1)
-                m_sourceCapacityToNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+            if (m_sourceCapacityToNodes[i][j] == 1) {
+                m_sourceCapacityToNodes[i][j] = (
+                    ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3)
+                ); //-log(pf);
+            }
             if (m_sinkCapacityFromNodes[i][j] == 1)
-                m_sinkCapacityFromNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+                m_sinkCapacityFromNodes[i][j] = (
+                    ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3)
+                ); //-log(1 - pf);
         }
     }
 
@@ -168,7 +253,8 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     {
         for (size_t j = 0; j < m_width; j++)
         {
-            //m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j] - m_sinkCapacityFromNodes[i][j];
+            //m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j]
+            //  - m_sinkCapacityFromNodes[i][j];
             //m_sourceFlowToNodes[i][j] = m_sourceCapacityToNodes[i][j];
             m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j];
             m_sourceCapacityFromNodes[i][j] = m_sourceCapacityToNodes[i][j];
@@ -186,7 +272,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     //exit(0);
 }
 
-bool Graph::push(unsigned int i, unsigned int j) 
+bool Graph::push(unsigned int i, unsigned int j)
 {
     bool ok = false;
     bool notSource = false;
@@ -199,8 +285,11 @@ bool Graph::push(unsigned int i, unsigned int j)
         notSource = true;
         ok = true;
     }
-    if (j >= 1 && m_heights[i][j - 1] == m_heights[i][j] - 1 && m_leftNeighbourCapacity[i][j] > 0)
-    {
+    if (  // Check left neighbour
+            j >= 1
+            && m_heights[i][j - 1] == m_heights[i][j] - 1
+            && m_leftNeighbourCapacity[i][j] > 0
+    ) {
         int flow = std::min(m_leftNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
         m_excessFlow[i][j - 1] += flow;
@@ -208,19 +297,30 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_rightNeighbourCapacity[i][j - 1] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to left" << std::endl;
     }
-    if (j < m_width - 1 && m_heights[i][j + 1] == m_heights[i][j] - 1 && m_rightNeighbourCapacity[i][j] > 0)
-    {
-        int flow = std::min(m_rightNeighbourCapacity[i][j], m_excessFlow[i][j]);
+    if (  // Check right neighbour
+            j < m_width - 1
+            && m_heights[i][j + 1] == m_heights[i][j] - 1
+            && m_rightNeighbourCapacity[i][j] > 0
+    ) {
+        int flow = std::min(
+            m_rightNeighbourCapacity[i][j],
+            m_excessFlow[i][j]
+        );
         m_excessFlow[i][j] -= flow;
         m_excessFlow[i][j + 1] += flow;
         m_rightNeighbourCapacity[i][j] -= flow;
         m_leftNeighbourCapacity[i][j + 1] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to right" << std::endl;
     }
-    if (i >= 1 && m_heights[i - 1][j] == m_heights[i][j] - 1 && m_topNeighbourCapacity[i][j] > 0)
-    {
+    if (  // Check top neighbour
+            i >= 1
+            && m_heights[i - 1][j] == m_heights[i][j] - 1
+            && m_topNeighbourCapacity[i][j] > 0
+    ) {
         int flow = std::min(m_topNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
         m_excessFlow[i - 1][j] += flow;
@@ -228,20 +328,34 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_bottomNeighbourCapacity[i - 1][j] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to top" << std::endl;
     }
-    if (i < m_height - 1 && m_heights[i + 1][j] == m_heights[i][j] - 1 && m_bottomNeighbourCapacity[i][j] > 0)
-    {
-        int flow = std::min(m_bottomNeighbourCapacity[i][j], m_excessFlow[i][j]);
+    if (  // Check bottom neighbour
+            i < m_height - 1
+            && m_heights[i + 1][j] == m_heights[i][j] - 1
+            && m_bottomNeighbourCapacity[i][j] > 0
+    ) {
+        int flow = std::min(
+            m_bottomNeighbourCapacity[i][j],
+            m_excessFlow[i][j]
+        );
         m_excessFlow[i][j] -= flow;
         m_excessFlow[i + 1][j] += flow;
         m_bottomNeighbourCapacity[i][j] -= flow;
         m_topNeighbourCapacity[i + 1][j] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to bottom" << std::endl;
     }
-    if (m_maxHeight == m_heights[i][j] - 1 && m_sourceCapacityFromNodes[i][j] > 0 && notSource == false)
-    {
-        int flow = std::min(m_sourceCapacityFromNodes[i][j], m_excessFlow[i][j]);
+    if (
+            m_maxHeight == m_heights[i][j] - 1
+            && m_sourceCapacityFromNodes[i][j] > 0
+            && notSource == false
+    ) {
+        int flow = std::min(
+            m_sourceCapacityFromNodes[i][j],
+            m_excessFlow[i][j]
+        );
         m_excessFlow[i][j] -= flow;
         m_sourceCapacityFromNodes[i][j] -= flow;
         m_sourceCapacityToNodes[i][j] += flow;
@@ -250,7 +364,7 @@ bool Graph::push(unsigned int i, unsigned int j)
     return ok;
 }
 
-void Graph::relabel(unsigned int i, unsigned int j) 
+void Graph::relabel(unsigned int i, unsigned int j)
 {
     auto myHeight = m_maxHeight;
     if (m_sinkCapacityFromNodes[i][j] > 0)
@@ -266,26 +380,29 @@ void Graph::relabel(unsigned int i, unsigned int j)
     if (m_sourceCapacityFromNodes[i][j] > 0 && myHeight == m_maxHeight)
         myHeight = m_maxHeight + 1;
     m_heights[i][j] = myHeight;
+    // std::cout << "Relabel : new height is " << myHeight << std::endl;
 }
 
-std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive() 
+std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
 {
     std::pair<unsigned int, unsigned int> pair;
-    int count = 0;
+    bool found = false;
     for (unsigned int i = 0; i < m_height; i++)
     {
         for (unsigned int j = 0; j < m_width; j++)
         {
-            if (m_excessFlow[i][j] > 0 /*&& m_heights[i][j] < m_maxHeight*/)
+            // If is active
+            if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
             {
-                if (count == 0)
-                    pair = std::make_pair(i, j);
-                count++;
+                pair = std::make_pair(i, j);
+                found = true;
+                break;
             }
         }
+        if (found)
+            break;
     }
-    std::cout << count << "\n";
-    if (count > 0)
+    if (found)
         return std::make_shared<std::pair<unsigned int, unsigned int>>(pair);
     return nullptr;
 }

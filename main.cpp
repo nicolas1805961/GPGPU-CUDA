@@ -11,6 +11,7 @@ int main()
     Graph graph(image, imageHelper);
     while (auto indices = graph.isActive())
     {
+        std::cout << (*indices).first << ", " << (*indices).second << std::endl;
         if (!graph.push((*indices).first, (*indices).second))
             graph.relabel((*indices).first, (*indices).second);
     }
