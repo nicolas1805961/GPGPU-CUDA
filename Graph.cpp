@@ -297,6 +297,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_rightNeighbourCapacity[i][j - 1] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to left" << std::endl;
     }
     if (  // Check right neighbour
             j < m_width - 1
@@ -313,6 +314,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_leftNeighbourCapacity[i][j + 1] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to right" << std::endl;
     }
     if (  // Check top neighbour
             i >= 1
@@ -326,6 +328,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_bottomNeighbourCapacity[i - 1][j] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to top" << std::endl;
     }
     if (  // Check bottom neighbour
             i < m_height - 1
@@ -342,6 +345,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_topNeighbourCapacity[i + 1][j] += flow;
         notSource = true;
         ok = true;
+        // std::cout << "Pushed to bottom" << std::endl;
     }
     if (
             m_maxHeight == m_heights[i][j] - 1
@@ -376,12 +380,13 @@ void Graph::relabel(unsigned int i, unsigned int j)
     if (m_sourceCapacityFromNodes[i][j] > 0 && myHeight == m_maxHeight)
         myHeight = m_maxHeight + 1;
     m_heights[i][j] = myHeight;
+    // std::cout << "Relabel : new height is " << myHeight << std::endl;
 }
 
 std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
 {
     std::pair<unsigned int, unsigned int> pair;
-    int count = 0;
+    bool found = false;
     for (unsigned int i = 0; i < m_height; i++)
     {
         for (unsigned int j = 0; j < m_width; j++)
@@ -390,15 +395,14 @@ std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
             if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
             {
                 pair = std::make_pair(i, j);
-                count++;
-                break;
-            }
-            if (count) {
+                found = true;
                 break;
             }
         }
+        if (found)
+            break;
     }
-    if (count > 0)
+    if (found)
         return std::make_shared<std::pair<unsigned int, unsigned int>>(pair);
     return nullptr;
 }
