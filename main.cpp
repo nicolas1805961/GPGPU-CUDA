@@ -6,13 +6,26 @@
 
 int main()
 {
-    Image image("inputs/3096.jpg");
-    Image imageHelper("inputs/3096_LI.jpg");
+    Image image("inputs/12003.jpg");
+    Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
+    /*auto activeNodes = graph.isActive();
+    while (activeNodes.size() > 0)
+    {
+        for (auto const &it : activeNodes)
+            graph.relabel(it.first, it.second);
+        for (auto const &it : activeNodes)
+            graph.push(it.first, it.second);
+        activeNodes = graph.isActive();
+    }*/
+    // tant qu'il existe un noeud actif et tant que ce noeud à un excess flow je push et je relabel (je relabel si je ne peux pas push)
     while (auto indices = graph.isActive())
     {
-        if (!graph.push((*indices).first, (*indices).second))
-            graph.relabel((*indices).first, (*indices).second);
+        while (graph.getExcessFlow()[(*indices).first][(*indices).second] > 0)
+        {
+            if (!graph.push((*indices).first, (*indices).second))
+                graph.relabel((*indices).first, (*indices).second);
+        }
     }
     return 0;
 }
