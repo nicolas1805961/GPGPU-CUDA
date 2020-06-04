@@ -12,12 +12,14 @@ private:
     int m_height;
     int m_width;
     uint8_t *m_rgbImage;
+    uint8_t *m_grayImage;
 
 public:
     Image(std::string const& name);
     int getWidth() const;
     int getHeight() const;
-    uint8_t *getImage() const;
+    uint8_t *getImageRgb() const;
+    uint8_t *getImageGray() const;
     ~Image();
 };
 

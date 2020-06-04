@@ -30,16 +30,20 @@ private:
     int m_maxHeight;
     int m_width;
     int m_height;
+    uint8_t *m_rgbImage;
+    uint8_t *m_grayImage;
+    uint8_t *m_rgbImageHelper;
+    uint8_t *m_grayImageHelper;
 
 public:
     Graph(Image const& image, Image const& imageHelper);
     bool push(unsigned int i, unsigned int j);
     void relabel(unsigned int i, unsigned int j);
     std::shared_ptr<std::pair<unsigned int, unsigned int>> isActive();
-    std::vector<std::vector<int>> getTop();
-    std::vector<std::vector<int>> getBottom();
-    std::vector<std::vector<int>> getLeft();
-    std::vector<std::vector<int>> getRight();
     std::vector<std::vector<int>> getHeights();
     std::vector<std::vector<int>> getExcessFlow();
+    std::vector<std::vector<int>> getSinkCapacityFromNodes();
+    std::vector<std::vector<int>> getSourceCapacityFromNodes();
+    std::vector<std::vector<int>> getSourceCapacityToNodes();
+    std::vector<std::vector<int>> getSinkCapacityToNodes();
 };
