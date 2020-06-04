@@ -1,7 +1,7 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight()), m_rgbImage(image.getImageRgb()), m_grayImage(image.getImageGray()), m_rgbImageHelper(imageHelper.getImageRgb()), m_grayImageHelper(imageHelper.getImageGray())
+Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight())
 {
     //initialisation des matrices
     m_heights = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));

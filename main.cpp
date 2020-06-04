@@ -27,9 +27,9 @@ int main()
                 graph.relabel((*indices).first, (*indices).second);
         }
     }
-    std::cout << "sinkCapacityFromNodes = " << graph.getSinkCapacityFromNodes()[0][0] << "\n";
+    /*std::cout << "sinkCapacityFromNodes = " << graph.getSinkCapacityFromNodes()[0][0] << "\n";
     std::cout << "sinkCapacityToNodes = " << graph.getSinkCapacityToNodes()[0][0] << "\n";
     std::cout << "sourceCapacityFromNodes = " << graph.getSourceCapacityFromNodes()[0][0] << "\n";
-    std::cout << "sourceCapacityToNodes = " << graph.getSourceCapacityToNodes()[0][0] << "\n";
+    std::cout << "sourceCapacityToNodes = " << graph.getSourceCapacityToNodes()[0][0] << "\n";*/
     return 0;
 }
