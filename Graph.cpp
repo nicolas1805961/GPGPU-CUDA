@@ -1,7 +1,7 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight())
+Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.getWidth() * image.getHeight()), m_width(image.getWidth()), m_height(image.getHeight())
 {
     //initialisation des matrices
     m_heights = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));
@@ -113,7 +113,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     {
         for (int j = 0; j < m_width; j++)
         {
-            m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j];
+            m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j] - m_sinkCapacityFromNodes[i][j];
             m_sourceCapacityFromNodes[i][j] = m_sourceCapacityToNodes[i][j];
             m_sourceCapacityToNodes[i][j] = 0;
         }
@@ -261,4 +261,34 @@ std::vector<std::vector<int>> Graph::getSourceCapacityToNodes()
 std::vector<std::vector<int>> Graph::getSinkCapacityToNodes() 
 {
     return m_sinkCapacityToNodes;
+}
+
+std::vector<std::vector<int>> Graph::getLeftNeighbourCapacity() 
+{
+    return m_leftNeighbourCapacity;
+}
+
+std::vector<std::vector<int>> Graph::getRightNeighbourCapacity() 
+{
+    return m_rightNeighbourCapacity;
+}
+
+std::vector<std::vector<int>> Graph::getTopNeighbourCapacity() 
+{
+    return m_topNeighbourCapacity;
+}
+
+std::vector<std::vector<int>> Graph::getBottomNeighbourCapacity() 
+{
+    return m_bottomNeighbourCapacity;
+}
+
+int Graph::getWidth() 
+{
+    return m_width;
+}
+
+int Graph::getHeight() 
+{
+    return m_height;
 }

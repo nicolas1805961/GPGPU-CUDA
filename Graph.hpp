@@ -46,4 +46,10 @@ public:
     std::vector<std::vector<int>> getSourceCapacityFromNodes();
     std::vector<std::vector<int>> getSourceCapacityToNodes();
     std::vector<std::vector<int>> getSinkCapacityToNodes();
+    std::vector<std::vector<int>> getLeftNeighbourCapacity();
+    std::vector<std::vector<int>> getRightNeighbourCapacity();
+    std::vector<std::vector<int>> getTopNeighbourCapacity();
+    std::vector<std::vector<int>> getBottomNeighbourCapacity();
+    int getWidth();
+    int getHeight();
 };
