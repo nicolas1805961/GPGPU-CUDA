@@ -1,6 +1,7 @@
 #include "Image.hpp"
 #include "Graph.hpp"
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
 
@@ -27,12 +28,27 @@ int main()
                 graph.relabel((*indices).first, (*indices).second);
         }
     }
+    std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.getHeight(), std::vector<int>(graph.getWidth(), 0));
     for (int i = 0; i < graph.getHeight(); i++)
     {
         for (int j = 0; j < graph.getWidth(); j++)
         {
-            std::cout << "i = " << i << ", j = " << j << " left = " << graph.getSourceCapacityToNodes()[i][j] << ", right = " << graph.getSinkCapacityToNodes()[i][j] << ", top = " << graph.getTopNeighbourCapacity()[i][j] << ", bottom = " << graph.getBottomNeighbourCapacity()[i][j] << "\n";
+            if (graph.getHeights()[i][j] > 0)
+                out[i][j] = 1;
+            //std::cout << graph.getHeights()[i][j] << "\n";
+            /*std::cout << "i = " << i << ", j = " << j << " left = " << graph.getSourceCapacityToNodes()[i][j] << ", right = " << graph.getSinkCapacityToNodes()[i][j] << ", top = " << graph.getTopNeighbourCapacity()[i][j] << ", bottom = " << graph.getBottomNeighbourCapacity()[i][j] << "\n";*/
         }
     }
+    std::ofstream ofs ("image.pbm", std::ios::binary);
+    ofs << "P4\n" << graph.getWidth() << " " << graph.getHeight() << "\n";
+    for (int i = 0; i < graph.getHeight(); i++)
+    {
+        for (int j = 0; j < graph.getWidth(); j++)
+        {
+            char b = (char)(out[i][j]);  
+            ofs << b;
+        }
+    }
+    ofs.close();
     return 0;
 }

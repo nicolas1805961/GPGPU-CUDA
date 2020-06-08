@@ -19,7 +19,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     {
         for (int j = 0; j < m_width; j++)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * (i + 1) + j]), 2);
+            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i + 1) + j]), 2);
             m_bottomNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
@@ -27,7 +27,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     {
         for (int j = 0; j < m_width; j++)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * (i - 1) + j]), 2);
+            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i - 1) + j]), 2);
             m_topNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
@@ -35,12 +35,12 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     {
         for (int j = 1; j < m_width; j++)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * i + j - 1]), 2);
+            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j - 1]), 2);
             m_leftNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
         for (int j = 0; j < m_width - 1; j++)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * i + j + 1]), 2);
+            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j + 1]), 2);
             m_rightNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
