@@ -22,14 +22,32 @@ int main()
         activeNodes = graph.isActive();
     }*/
     // tant qu'il existe un noeud actif et tant que ce noeud à un excess flow je push et je relabel (je relabel si je ne peux pas push)
-    while (auto indices = graph.isActive())
+    while (graph.count_active() > 0)
     {
-        while (graph.getExcessFlow()[(*indices).first][(*indices).second] > 0)
+
+        for (int i = 0; i < graph.getHeight(); i++)
+        {
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.relabel(i,j);
+            }
+        }
+
+        for (int i = 0; i < graph.getHeight(); i++)
+        {
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.push(i,j);
+            }
+        }
+
+        /*while (graph.getExcessFlow()[(*indices).first][(*indices).second] > 0)
         {
             if (!graph.push((*indices).first, (*indices).second))
                 graph.relabel((*indices).first, (*indices).second);
-        }
+        }*/
     }
+    std::cout << "Graph cut done\n";
     int x = graph.getHeight() * graph.getWidth();
     std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.getHeight(), std::vector<int>(graph.getWidth(), 0));
     //auto visited = graph.dfs();
@@ -37,6 +55,7 @@ int main()
     {
         for (int j = 0; j < graph.getWidth(); j++)
         {
+            std::cout << x << " , " << i << " , " << j << "\n";
             std::cout << x - (i * j) << "\n";
             if (graph.getHeights()[i][j] > 0)
                 out[i][j] = 1;

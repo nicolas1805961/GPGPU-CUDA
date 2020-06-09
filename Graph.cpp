@@ -140,8 +140,13 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     }
 }
 //fonction push. Semblable à la slide nvidia en rajoutant la possibilité de push vers le puit et la source. On cherche à push un max vers le puit donc le puit est prioritaire. A l'inverse on cherche à push le moins possible vers la source. Donc la source arrive en dernier recours. Chaque push doit augmenter la capacité dans le sens inverse (residual arc). On ne peut push que si la height du noeud voisin est inférieur de 1 au noeud selectionné.
-bool Graph::push(unsigned int i, unsigned int j) 
+bool Graph::push(int i, int j) 
 {
+    if (m_excessFlow[i][j] < 0 || m_heights[i][j] > m_maxHeight)
+    {
+        return false;
+    }
+
     bool ok = false;
     //pour débug décommenter cette ligne
     //std::cout << i << " " << j << " " << m_excessFlow[i][j] << " " << m_heights[i][j] << "\n";
@@ -153,7 +158,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_sinkCapacityToNodes[i][j] += flow;
         ok = true;
     }*/
-    if (m_excessFlow[i][j] > 0 && m_leftNeighbourCapacity[i][j] > 0 && m_heights[i][j - 1] == m_heights[i][j] - 1)
+    if (j > 0 && m_heights[i][j - 1] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_leftNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -162,7 +167,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_rightNeighbourCapacity[i][j - 1] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_rightNeighbourCapacity[i][j] > 0 && m_heights[i][j + 1] == m_heights[i][j] - 1)
+    if (j < m_width - 1 && m_heights[i][j + 1] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_rightNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -171,7 +176,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_leftNeighbourCapacity[i][j + 1] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_topNeighbourCapacity[i][j] > 0 && m_heights[i - 1][j] == m_heights[i][j] - 1)
+    if (i > 0 && m_heights[i - 1][j] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_topNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -180,7 +185,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_bottomNeighbourCapacity[i - 1][j] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_bottomNeighbourCapacity[i][j] > 0 && m_heights[i + 1][j] == m_heights[i][j] - 1)
+    if (i < m_height - 1 && m_heights[i + 1][j] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_bottomNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -202,22 +207,22 @@ bool Graph::push(unsigned int i, unsigned int j)
 // fonction relabel en ajoutant la possibilité de relabel au dessus de maxheight (cf example wikipedia). On cherche à relabel le noeud actif d'une unité de plus que le voisin ayant la "height" la plus basse et dont l'arc à une capacité supérieur à 0.
 void Graph::relabel(unsigned int i, unsigned int j) 
 {
-    if (m_excessFlow[i][j] > 0 /*&& m_heights[i][j] < m_maxHeight*/)
+    if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
     {
-        auto myHeight = std::numeric_limits<int>::max();
+        auto myHeight = m_maxHeight;
         /*if (m_sinkCapacityFromNodes[i][j] > 0)
             myHeight = std::min(myHeight, 0);*/
         if (m_leftNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i][j - 1]);
+            myHeight = std::min(myHeight, m_heights[i][j - 1] + 1);
         if (m_rightNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i][j + 1]);
+            myHeight = std::min(myHeight, m_heights[i][j + 1] + 1);
         if (m_topNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i - 1][j]);
+            myHeight = std::min(myHeight, m_heights[i - 1][j] + 1);
         if (m_bottomNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i + 1][j]);
+            myHeight = std::min(myHeight, m_heights[i + 1][j] + 1);
         /*if (m_sourceCapacityFromNodes[i][j] > 0)
             myHeight = std::min(myHeight, m_maxHeight);*/
-        m_heights[i][j] = myHeight + 1;
+        m_heights[i][j] = myHeight;
     }
 }
 //selection du noeud actif : celui qui est actif et qui a la height maximum(ce dernier point n'est pas necessaire). On renvoit une paire d'indices d'un noeud actif.
@@ -251,6 +256,38 @@ std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
         return std::make_shared<std::pair<unsigned int, unsigned int>>(pair);
     else
         return nullptr;
+}
+
+bool Graph::find_active()
+{
+    for (int i = 0; i < m_height; i++)
+    {
+        for (int j = 0; j < m_width; j++)
+        {
+            if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int Graph::count_active()
+{
+    int count = 0;
+    for (int i = 0; i < m_height; i++)
+    {
+        for (int j = 0; j < m_width; j++)
+        {
+            if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
+            {
+                count++;
+            }
+        }
+    }
+    std::cout << count << "\n";
+    return count;
 }
 
 std::vector<std::vector<int>> Graph::getHeights() 

@@ -34,8 +34,10 @@ private:
 
 public:
     Graph(Image const& image, Image const& imageHelper);
-    bool push(unsigned int i, unsigned int j);
+    bool push(int i, int j);
     void relabel(unsigned int i, unsigned int j);
+    int count_active();
+    bool find_active();
     std::shared_ptr<std::pair<unsigned int, unsigned int>> isActive();
     std::vector<std::vector<int>> getHeights();
     std::vector<std::vector<int>> getExcessFlow();
