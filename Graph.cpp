@@ -62,13 +62,17 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
         {
             white.push_back(i * 3);
             m_sourceCapacityToNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sourceCapacityFromNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sinkCapacityFromNodes[i / m_width][i % m_width] = 0;
+            m_sinkCapacityToNodes[i / m_width][i % m_width] = 0;
         }
         else if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 0)
         {
             black.push_back(i * 3);
             m_sinkCapacityFromNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sinkCapacityToNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sourceCapacityToNodes[i / m_width][i % m_width] = 0;
+            m_sourceCapacityFromNodes[i / m_width][i % m_width] = 0;
         }
     }
     
@@ -103,9 +107,15 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
             float db = sqrt(pow(r - averageBackgroundRed, 2) + pow(g - averageBackgroundGreen, 2) + pow(b - averageBackgroundBlue, 2));
 
             if (m_sourceCapacityToNodes[i][j] == 1)
+            {
                 m_sourceCapacityToNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+                m_sourceCapacityFromNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+            }
             if (m_sinkCapacityFromNodes[i][j] == 1)
+            {
                 m_sinkCapacityFromNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+                m_sinkCapacityToNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+            }
         }
     }
     //ici j'initialise l'excess flow en saturant les arrêtes(capacity) partant de la source. Et je créer la capacité dans le sens inverse.
@@ -114,8 +124,9 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
         for (int j = 0; j < m_width; j++)
         {
             m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j] - m_sinkCapacityFromNodes[i][j];
-            m_sourceCapacityFromNodes[i][j] = m_sourceCapacityToNodes[i][j];
-            m_sourceCapacityToNodes[i][j] = 0;
+            /*m_sourceCapacityFromNodes[i][j] = m_sourceCapacityToNodes[i][j];
+            m_sinkCapacityToNodes[i][j] = m_sinkCapacityFromNodes[i][j];
+            m_sourceCapacityToNodes[i][j] = 0;*/
         }
     }
 }
@@ -291,4 +302,34 @@ int Graph::getWidth()
 int Graph::getHeight() 
 {
     return m_height;
+}
+
+std::vector<std::vector<bool>> Graph::dfs()
+{
+    std::vector<std::vector<bool>> visited = std::vector<std::vector<bool>>(m_height, std::vector<bool>(m_width, false));
+    std::stack<std::pair<int, int>> stack;
+    for (int i = 0; i < m_height; i++)
+    {
+        for (int j = 0; j < m_width; j++)
+        {
+            if (m_sourceCapacityToNodes[i][j] > 0)
+                stack.push(std::make_pair(i, j));
+        }
+    }
+    while (!stack.empty())
+    {
+        auto s = stack.top(); 
+        stack.pop();
+        visited[s.first][s.second] = true;
+        if (m_leftNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first][s.second - 1])
+            stack.push(std::make_pair(s.first, s.second - 1));
+        if (m_rightNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first][s.second + 1])
+            stack.push(std::make_pair(s.first, s.second + 1));
+        if (m_bottomNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first + 1][s.second])
+            stack.push(std::make_pair(s.first + 1, s.second));
+        if (m_topNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first - 1][s.second])
+            stack.push(std::make_pair(s.first - 1, s.second));
+        std::cout << stack.size() << "\n";
+    }
+    return visited;
 }

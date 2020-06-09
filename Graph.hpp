@@ -7,6 +7,7 @@
 #include <cmath>
 #include <algorithm>
 #include <memory>
+#include <stack>
 
 class Graph
 {
@@ -50,6 +51,7 @@ public:
     std::vector<std::vector<int>> getRightNeighbourCapacity();
     std::vector<std::vector<int>> getTopNeighbourCapacity();
     std::vector<std::vector<int>> getBottomNeighbourCapacity();
+    std::vector<std::vector<bool>> dfs();
     int getWidth();
     int getHeight();
 };
