@@ -9,8 +9,8 @@
 
 int main()
 {
-    Image image("image_blank.ppm");
-    Image imageHelper("image_modified.ppm");
+    Image image("inputs/12003.jpg");
+    Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
     /*auto activeNodes = graph.isActive();
     while (activeNodes.size() > 0)
@@ -32,13 +32,13 @@ int main()
     }
     int x = graph.getHeight() * graph.getWidth();
     std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.getHeight(), std::vector<int>(graph.getWidth(), 0));
-    auto visited = graph.dfs();
+    //auto visited = graph.dfs();
     for (int i = 0; i < graph.getHeight(); i++)
     {
         for (int j = 0; j < graph.getWidth(); j++)
         {
             std::cout << x - (i * j) << "\n";
-            if (visited[i][j])
+            if (graph.getHeights()[i][j] > 0)
                 out[i][j] = 1;
         }
     }
@@ -49,9 +49,9 @@ int main()
     {
         for (int j = 0; j < graph.getWidth(); j++)
         {
-            char r = (char)(255 * out[j][i]); 
-            char g = (char)(255 * out[j][i]); 
-            char b = (char)(255 * out[j][i]); 
+            char r = (char)(255 * out[i][j]); 
+            char g = (char)(255 * out[i][j]); 
+            char b = (char)(255 * out[i][j]); 
             ofs << r << g << b;
         }
     }

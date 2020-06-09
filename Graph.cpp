@@ -1,7 +1,7 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.getWidth() * image.getHeight()), m_width(image.getWidth()), m_height(image.getHeight())
+Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight())
 {
     //initialisation des matrices
     m_heights = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));
@@ -14,6 +14,8 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     m_sinkCapacityFromNodes = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 1));
     m_sinkCapacityToNodes = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));
     m_sourceCapacityFromNodes = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));
+    m_sourceCapacity = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 1));
+    m_sinkCapacity = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 1));
     // Ici je label les arrêtes entre les noeuds avec la distance en rgb entre chaque pixel (noeud = pixel)
     for (int i = 0; i < m_height - 1; i++)
     {
@@ -61,18 +63,22 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
         if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 255)
         {
             white.push_back(i * 3);
-            m_sourceCapacityToNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sourceCapacity[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sinkCapacity[i / m_width][i % m_width] = 0;
+            /*m_sourceCapacityToNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sourceCapacityFromNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sinkCapacityFromNodes[i / m_width][i % m_width] = 0;
-            m_sinkCapacityToNodes[i / m_width][i % m_width] = 0;
+            m_sinkCapacityToNodes[i / m_width][i % m_width] = 0;*/
         }
         else if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 0)
         {
             black.push_back(i * 3);
-            m_sinkCapacityFromNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sinkCapacity[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sourceCapacity[i / m_width][i % m_width] = 0;
+            /*m_sinkCapacityFromNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sinkCapacityToNodes[i / m_width][i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
             m_sourceCapacityToNodes[i / m_width][i % m_width] = 0;
-            m_sourceCapacityFromNodes[i / m_width][i % m_width] = 0;
+            m_sourceCapacityFromNodes[i / m_width][i % m_width] = 0;*/
         }
     }
     
@@ -108,13 +114,15 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
 
             if (m_sourceCapacityToNodes[i][j] == 1)
             {
-                m_sourceCapacityToNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
-                m_sourceCapacityFromNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+                m_sourceCapacity[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+                /*m_sourceCapacityToNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+                m_sourceCapacityFromNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;*/
             }
             if (m_sinkCapacityFromNodes[i][j] == 1)
             {
-                m_sinkCapacityFromNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
-                m_sinkCapacityToNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+                m_sinkCapacity[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+                /*m_sinkCapacityFromNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
+                m_sinkCapacityToNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);*/
             }
         }
     }
@@ -123,7 +131,8 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(image.ge
     {
         for (int j = 0; j < m_width; j++)
         {
-            m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j] - m_sinkCapacityFromNodes[i][j];
+            m_excessFlow[i][j] = m_sourceCapacity[i][j] - m_sinkCapacity[i][j];
+            //m_excessFlow[i][j] = m_sourceCapacityToNodes[i][j] - m_sinkCapacityFromNodes[i][j];
             /*m_sourceCapacityFromNodes[i][j] = m_sourceCapacityToNodes[i][j];
             m_sinkCapacityToNodes[i][j] = m_sinkCapacityFromNodes[i][j];
             m_sourceCapacityToNodes[i][j] = 0;*/
@@ -136,14 +145,14 @@ bool Graph::push(unsigned int i, unsigned int j)
     bool ok = false;
     //pour débug décommenter cette ligne
     //std::cout << i << " " << j << " " << m_excessFlow[i][j] << " " << m_heights[i][j] << "\n";
-    if (m_excessFlow[i][j] > 0 && m_sinkCapacityFromNodes[i][j] > 0 && m_heights[i][j] == 1)
+    /*if (m_excessFlow[i][j] > 0 && m_sinkCapacityFromNodes[i][j] > 0 && m_heights[i][j] == 1)
     {
         int flow = std::min(m_sinkCapacityFromNodes[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
         m_sinkCapacityFromNodes[i][j] -= flow;
         m_sinkCapacityToNodes[i][j] += flow;
         ok = true;
-    }
+    }*/
     if (m_excessFlow[i][j] > 0 && m_leftNeighbourCapacity[i][j] > 0 && m_heights[i][j - 1] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_leftNeighbourCapacity[i][j], m_excessFlow[i][j]);
@@ -180,14 +189,14 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_topNeighbourCapacity[i + 1][j] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_sourceCapacityFromNodes[i][j] > 0 && m_maxHeight + 1 == m_heights[i][j])
+    /*if (m_excessFlow[i][j] > 0 && m_sourceCapacityFromNodes[i][j] > 0 && m_maxHeight + 1 == m_heights[i][j])
     {
         int flow = std::min(m_sourceCapacityFromNodes[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
         m_sourceCapacityFromNodes[i][j] -= flow;
         m_sourceCapacityToNodes[i][j] += flow;
         ok = true;
-    }
+    }*/
     return ok;
 }
 // fonction relabel en ajoutant la possibilité de relabel au dessus de maxheight (cf example wikipedia). On cherche à relabel le noeud actif d'une unité de plus que le voisin ayant la "height" la plus basse et dont l'arc à une capacité supérieur à 0.
@@ -196,8 +205,8 @@ void Graph::relabel(unsigned int i, unsigned int j)
     if (m_excessFlow[i][j] > 0 /*&& m_heights[i][j] < m_maxHeight*/)
     {
         auto myHeight = std::numeric_limits<int>::max();
-        if (m_sinkCapacityFromNodes[i][j] > 0)
-            myHeight = std::min(myHeight, 0);
+        /*if (m_sinkCapacityFromNodes[i][j] > 0)
+            myHeight = std::min(myHeight, 0);*/
         if (m_leftNeighbourCapacity[i][j] > 0)
             myHeight = std::min(myHeight, m_heights[i][j - 1]);
         if (m_rightNeighbourCapacity[i][j] > 0)
@@ -206,8 +215,8 @@ void Graph::relabel(unsigned int i, unsigned int j)
             myHeight = std::min(myHeight, m_heights[i - 1][j]);
         if (m_bottomNeighbourCapacity[i][j] > 0)
             myHeight = std::min(myHeight, m_heights[i + 1][j]);
-        if (m_sourceCapacityFromNodes[i][j] > 0)
-            myHeight = std::min(myHeight, m_maxHeight);
+        /*if (m_sourceCapacityFromNodes[i][j] > 0)
+            myHeight = std::min(myHeight, m_maxHeight);*/
         m_heights[i][j] = myHeight + 1;
     }
 }
@@ -223,7 +232,7 @@ std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
     {
         for (int j = 0; j < m_width; j++)
         {
-            if (m_excessFlow[i][j] > 0 /*&& m_heights[i][j] < m_maxHeight*/)
+            if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
             {
                 if (m_heights[i][j] > maxHeight)
                 {

@@ -22,12 +22,8 @@ private:
     std::vector<std::vector<int>> m_sourceCapacityFromNodes;
     std::vector<std::vector<int>> m_sinkCapacityFromNodes;
     std::vector<std::vector<int>> m_sinkCapacityToNodes;
-    /*std::vector<std::vector<unsigned int>> m_sinkFlowFromNodes;
-    std::vector<std::vector<unsigned int>> m_sourceFlowToNodes;
-    std::vector<std::vector<unsigned int>> m_leftNeighbourFlow;
-    std::vector<std::vector<unsigned int>> m_rightNeighbourFlow;
-    std::vector<std::vector<unsigned int>> m_topNeighbourFlow;
-    std::vector<std::vector<unsigned int>> m_bottomNeighbourFlow;*/
+    std::vector<std::vector<int>> m_sinkCapacity;
+    std::vector<std::vector<int>> m_sourceCapacity;
     int m_maxHeight;
     int m_width;
     int m_height;
