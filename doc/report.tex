@@ -1,0 +1,72 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+\usepackage{glossaries}
+
+\title{GPGPU - Project report}
+\author{Nicolas Portal - Alexandre Yvart - Geoffrey Jount}
+
+
+\begin{document}
+\selectlanguage{english}
+\pagenumbering{gobble}
+\maketitle
+
+
+\pagebreak
+\tableofcontents
+
+
+\pagebreak
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+For educational purpose in the GPGPU subject, we are asked to work on a project
+using a GPU parallel method. We will use the CUDA library.
+
+\section{Problem description}
+
+This project's goal is to implement an image segmentation algorithm :
+the max-flow/min-cut algorithm. A picture containing numerous pixels however,
+processing one after another in a simple \texttt{for} loop would show to be
+very slow. We thus need to make the process parallel, and implement it on GPU
+for an even faster result : the \textit{push-relabel} algorithm, parallel
+version of the first mentioned, is what we seek.
+
+\section{CPU implementation}
+
+\section{GPU implementation}
+
+\section{Bottlenecks}
+
+\section{Enhancements}
+
+\subsection{Enhancement 1}
+
+\subsubsection{Justification}
+
+\subsubsection{Description}
+
+\subsubsection{Performance comparisons}
+
+\section{Benchmarks recapitulation}
+
+\section{Tasks repartition}
+
+\noindent
+Nicolas\\
+- CPU implementation and debug\\
+\\
+Alexandre\\
+- CPU debug\\
+- GPU implementation\\
+\\
+Geoffrey\\
+- CPU debug\\
+- Benchmarking implementation
+\end{document}
+
