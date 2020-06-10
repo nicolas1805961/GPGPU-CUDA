@@ -12,32 +12,33 @@ int main()
     Image image("inputs/12003.jpg");
     Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
-    /*auto activeNodes = graph.isActive();
-    while (activeNodes.size() > 0)
-    {
-        for (auto const &it : activeNodes)
-            graph.relabel(it.first, it.second);
-        for (auto const &it : activeNodes)
-            graph.push(it.first, it.second);
-        activeNodes = graph.isActive();
-    }*/
     // tant qu'il existe un noeud actif et tant que ce noeud à un excess flow je push et je relabel (je relabel si je ne peux pas push)
-    while (auto indices = graph.isActive())
+    while (graph.count_active() > 0)
     {
-        while (graph.getExcessFlow()[(*indices).first][(*indices).second] > 0)
+
+        for (int i = 0; i < graph.getHeight(); i++)
         {
-            if (!graph.push((*indices).first, (*indices).second))
-                graph.relabel((*indices).first, (*indices).second);
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.relabel(i,j);
+            }
+        }
+        for (int i = 0; i < graph.getHeight(); i++)
+        {
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.push(i,j);
+            }
         }
     }
-    int x = graph.getHeight() * graph.getWidth();
+    std::cout << "Graph cut done\n";
     std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.getHeight(), std::vector<int>(graph.getWidth(), 0));
     //auto visited = graph.dfs();
     for (int i = 0; i < graph.getHeight(); i++)
     {
+        std::cout << i << " / " << graph.getHeight() << "\n";
         for (int j = 0; j < graph.getWidth(); j++)
         {
-            std::cout << x - (i * j) << "\n";
             if (graph.getHeights()[i][j] > 0)
                 out[i][j] = 1;
         }

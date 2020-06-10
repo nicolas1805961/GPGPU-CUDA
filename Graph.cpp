@@ -1,7 +1,7 @@
 #include "Graph.hpp"
 #include <iostream>
 
-Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight())
+Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image.getWidth() * image.getHeight()*/), m_width(image.getWidth()), m_height(image.getHeight())
 {
     //initialisation des matrices
     m_heights = std::vector<std::vector<int>>(m_height, std::vector<int>(m_width, 0));
@@ -21,7 +21,11 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     {
         for (int j = 0; j < m_width; j++)
         {
-            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i + 1) + j]), 2);
+            int redDistance = pow((image.getImageRgb()[(m_width * i + j) * 3] - image.getImageRgb()[(m_width * (i + 1) + j) * 3]), 2);
+            int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * (i + 1) + j) * 3) + 1]), 2);
+            int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * (i + 1) + j) * 3) + 2]), 2);
+            int distance = redDistance + greenDistance + blueDistance;
+            /*int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i + 1) + j]), 2);*/
             m_bottomNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
@@ -29,7 +33,11 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     {
         for (int j = 0; j < m_width; j++)
         {
-            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i - 1) + j]), 2);
+            int redDistance = pow((image.getImageRgb()[(m_width * i + j) * 3] - image.getImageRgb()[(m_width * (i - 1) + j) * 3]), 2);
+            int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * (i - 1) + j) * 3) + 1]), 2);
+            int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * (i - 1) + j) * 3) + 2]), 2);
+            int distance = redDistance + greenDistance + blueDistance;
+            //int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * (i - 1) + j]), 2);
             m_topNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
@@ -37,12 +45,20 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     {
         for (int j = 1; j < m_width; j++)
         {
-            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j - 1]), 2);
+            int redDistance = pow((image.getImageRgb()[(m_width * i + j) * 3] - image.getImageRgb()[((m_width * i + j) * 3) - 3]), 2);
+            int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * i + j) * 3) - 2]), 2);
+            int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * i + j) * 3) - 1]), 2);
+            int distance = redDistance + greenDistance + blueDistance;
+            //int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j - 1]), 2);
             m_leftNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
         for (int j = 0; j < m_width - 1; j++)
         {
-            int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j + 1]), 2);
+            int redDistance = pow((image.getImageRgb()[(m_width * i + j) * 3] - image.getImageRgb()[((m_width * i + j) * 3) + 3]), 2);
+            int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * i + j) * 3) + 4]), 2);
+            int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * i + j) * 3) + 5]), 2);
+            int distance = redDistance + greenDistance + blueDistance;
+            //int distance = pow((image.getImageGray()[m_width * i + j] - image.getImageGray()[m_width * i + j + 1]), 2);
             m_rightNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
@@ -112,13 +128,13 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
             float df = sqrt(pow(r - averageForegroundRed, 2) + pow(g - averageForegroundGreen, 2) + pow(b - averageForegroundBlue, 2));
             float db = sqrt(pow(r - averageBackgroundRed, 2) + pow(g - averageBackgroundGreen, 2) + pow(b - averageBackgroundBlue, 2));
 
-            if (m_sourceCapacityToNodes[i][j] == 1)
+            if (m_sourceCapacity[i][j] == 1)
             {
                 m_sourceCapacity[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
                 /*m_sourceCapacityToNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
                 m_sourceCapacityFromNodes[i][j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;*/
             }
-            if (m_sinkCapacityFromNodes[i][j] == 1)
+            if (m_sinkCapacity[i][j] == 1)
             {
                 m_sinkCapacity[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
                 /*m_sinkCapacityFromNodes[i][j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
@@ -140,8 +156,11 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(10/*imag
     }
 }
 //fonction push. Semblable à la slide nvidia en rajoutant la possibilité de push vers le puit et la source. On cherche à push un max vers le puit donc le puit est prioritaire. A l'inverse on cherche à push le moins possible vers la source. Donc la source arrive en dernier recours. Chaque push doit augmenter la capacité dans le sens inverse (residual arc). On ne peut push que si la height du noeud voisin est inférieur de 1 au noeud selectionné.
-bool Graph::push(unsigned int i, unsigned int j) 
+bool Graph::push(int i, int j) 
 {
+    if (m_excessFlow[i][j] <= 0 || m_heights[i][j] >= m_maxHeight)
+        return false;
+
     bool ok = false;
     //pour débug décommenter cette ligne
     //std::cout << i << " " << j << " " << m_excessFlow[i][j] << " " << m_heights[i][j] << "\n";
@@ -153,7 +172,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_sinkCapacityToNodes[i][j] += flow;
         ok = true;
     }*/
-    if (m_excessFlow[i][j] > 0 && m_leftNeighbourCapacity[i][j] > 0 && m_heights[i][j - 1] == m_heights[i][j] - 1)
+    if (j > 0 && m_heights[i][j - 1] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_leftNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -162,7 +181,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_rightNeighbourCapacity[i][j - 1] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_rightNeighbourCapacity[i][j] > 0 && m_heights[i][j + 1] == m_heights[i][j] - 1)
+    if (j < m_width - 1 && m_heights[i][j + 1] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_rightNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -171,7 +190,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_leftNeighbourCapacity[i][j + 1] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_topNeighbourCapacity[i][j] > 0 && m_heights[i - 1][j] == m_heights[i][j] - 1)
+    if (i > 0 && m_heights[i - 1][j] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_topNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -180,7 +199,7 @@ bool Graph::push(unsigned int i, unsigned int j)
         m_bottomNeighbourCapacity[i - 1][j] += flow;
         ok = true;
     }
-    if (m_excessFlow[i][j] > 0 && m_bottomNeighbourCapacity[i][j] > 0 && m_heights[i + 1][j] == m_heights[i][j] - 1)
+    if (i < m_height - 1 && m_heights[i + 1][j] == m_heights[i][j] - 1)
     {
         int flow = std::min(m_bottomNeighbourCapacity[i][j], m_excessFlow[i][j]);
         m_excessFlow[i][j] -= flow;
@@ -202,22 +221,22 @@ bool Graph::push(unsigned int i, unsigned int j)
 // fonction relabel en ajoutant la possibilité de relabel au dessus de maxheight (cf example wikipedia). On cherche à relabel le noeud actif d'une unité de plus que le voisin ayant la "height" la plus basse et dont l'arc à une capacité supérieur à 0.
 void Graph::relabel(unsigned int i, unsigned int j) 
 {
-    if (m_excessFlow[i][j] > 0 /*&& m_heights[i][j] < m_maxHeight*/)
+    if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
     {
-        auto myHeight = std::numeric_limits<int>::max();
+        auto myHeight = m_maxHeight;
         /*if (m_sinkCapacityFromNodes[i][j] > 0)
             myHeight = std::min(myHeight, 0);*/
         if (m_leftNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i][j - 1]);
+            myHeight = std::min(myHeight, m_heights[i][j - 1] + 1);
         if (m_rightNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i][j + 1]);
+            myHeight = std::min(myHeight, m_heights[i][j + 1] + 1);
         if (m_topNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i - 1][j]);
+            myHeight = std::min(myHeight, m_heights[i - 1][j] + 1);
         if (m_bottomNeighbourCapacity[i][j] > 0)
-            myHeight = std::min(myHeight, m_heights[i + 1][j]);
+            myHeight = std::min(myHeight, m_heights[i + 1][j] + 1);
         /*if (m_sourceCapacityFromNodes[i][j] > 0)
             myHeight = std::min(myHeight, m_maxHeight);*/
-        m_heights[i][j] = myHeight + 1;
+        m_heights[i][j] = myHeight;
     }
 }
 //selection du noeud actif : celui qui est actif et qui a la height maximum(ce dernier point n'est pas necessaire). On renvoit une paire d'indices d'un noeud actif.
@@ -251,6 +270,23 @@ std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
         return std::make_shared<std::pair<unsigned int, unsigned int>>(pair);
     else
         return nullptr;
+}
+
+int Graph::count_active()
+{
+    int count = 0;
+    for (int i = 0; i < m_height; i++)
+    {
+        for (int j = 0; j < m_width; j++)
+        {
+            if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
+            {
+                count++;
+            }
+        }
+    }
+    std::cout << count << "\n";
+    return count;
 }
 
 std::vector<std::vector<int>> Graph::getHeights() 
@@ -321,7 +357,7 @@ std::vector<std::vector<bool>> Graph::dfs()
     {
         for (int j = 0; j < m_width; j++)
         {
-            if (m_sourceCapacityToNodes[i][j] > 0)
+            if (m_sourceCapacity[i][j] > 0)
                 stack.push(std::make_pair(i, j));
         }
     }
