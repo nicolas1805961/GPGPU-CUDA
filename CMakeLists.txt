@@ -39,6 +39,13 @@ find_package(TBB REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-add_executable(bench benchmark/bench.cpp)
+set(SOURCES
+        benchmark/bench.cpp
+        cpu/src/Graph.cpp
+        cpu/src/Image.cpp
+        cpu/src/graphcut_cpu.cpp
+)
+add_executable(bench ${SOURCES})
+target_include_directories(bench PRIVATE cpu/include)
 target_compile_features(bench PUBLIC cxx_std_17)
 target_link_libraries(bench PRIVATE spdlog::spdlog benchmark)

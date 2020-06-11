@@ -1,10 +1,10 @@
 #include "Image.hpp"
 #include "Graph.hpp"
+#include "graphcut_cpu.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cmath>
-
 
 
 int main()
@@ -12,27 +12,15 @@ int main()
     Image image("inputs/12003.jpg");
     Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
-    // tant qu'il existe un noeud actif et tant que ce noeud à un excess flow je push et je relabel (je relabel si je ne peux pas push)
-    while (graph.count_active() > 0)
-    {
 
-        for (int i = 0; i < graph.getHeight(); i++)
-        {
-            for (int j = 0; j < graph.getWidth(); j++)
-            {
-                    graph.relabel(i,j);
-            }
-        }
-        for (int i = 0; i < graph.getHeight(); i++)
-        {
-            for (int j = 0; j < graph.getWidth(); j++)
-            {
-                    graph.push(i,j);
-            }
-        }
-    }
+    graphcut_cpu(graph);
     std::cout << "Graph cut done\n";
-    std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.getHeight(), std::vector<int>(graph.getWidth(), 0));
+
+    std::vector<std::vector<int>> out =
+        std::vector<std::vector<int>>(
+                graph.getHeight(),
+                std::vector<int>(graph.getWidth(), 0)
+        );
     //auto visited = graph.dfs();
     for (int i = 0; i < graph.getHeight(); i++)
     {
