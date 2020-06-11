@@ -1,0 +1,17 @@
+\babel@toc {french}{}
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Introduction}{1}%
+\contentsline {section}{\numberline {2}Problem description}{1}%
+\contentsline {section}{\numberline {3}CPU implementation}{1}%
+\contentsline {section}{\numberline {4}GPU implementation}{1}%
+\contentsline {section}{\numberline {5}Bottlenecks 1}{1}%
+\contentsline {subsection}{\numberline {5.1}Enhancements}{2}%
+\contentsline {section}{\numberline {6}Bottlenecks 2}{2}%
+\contentsline {subsection}{\numberline {6.1}Enhancement}{2}%
+\contentsline {subsubsection}{\numberline {6.1.1}Justification}{2}%
+\contentsline {section}{\numberline {7}Bottlenecks 3}{2}%
+\contentsline {subsection}{\numberline {7.1}Enhancement}{2}%
+\contentsline {section}{\numberline {8}Description}{3}%
+\contentsline {section}{\numberline {9}Performance comparisons}{3}%
+\contentsline {section}{\numberline {10}Benchmarks recapitulation}{3}%
+\contentsline {section}{\numberline {11}Tasks repartition}{3}%
