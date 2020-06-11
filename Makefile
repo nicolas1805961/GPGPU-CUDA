@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address -Iinclude
 LDFLAGS =  -fsanitize=address
 
-SRC = main.cpp Graph.cpp Image.cpp
+SRC = src/main.cpp src/Graph.cpp src/Image.cpp
 OBJ = $(SRC:.cpp=.o)
 EXEC = main
 

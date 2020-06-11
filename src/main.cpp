@@ -44,7 +44,7 @@ int main()
         }
     }
     
-    std::ofstream ofs ("out.ppm", std::ios::binary);
+    std::ofstream ofs ("results/out.ppm", std::ios::binary);
     ofs << "P6\n" << graph.getWidth() << " " << graph.getHeight() << "\n255\n";
     for (int i = 0; i < graph.getHeight(); i++)
     {
