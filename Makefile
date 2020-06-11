@@ -1,10 +1,10 @@
 CXX = g++
-CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address -Iinclude
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address -Icpu/include
 LDFLAGS =  -fsanitize=address
 
-SRC = src/main.cpp src/Graph.cpp src/Image.cpp
+SRC = cpu/src/main.cpp cpu/src/Graph.cpp cpu/src/Image.cpp
 OBJ = $(SRC:.cpp=.o)
-EXEC = main
+EXEC = CPU
 
 all: $(EXEC)
 
