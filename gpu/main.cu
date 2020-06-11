@@ -1,0 +1,214 @@
+#include "Image.hpp"
+#include "Graph.hpp"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <stdio.h>
+
+#define cudaCheckError() {                                                                       \
+  cudaError_t e=cudaGetLastError();                                                        \
+  if(e!=cudaSuccess) {                                                                     \
+      printf("Cuda failure %s:%d: '%s'\n",__FILE__,__LINE__,cudaGetErrorString(e));        \
+      exit(EXIT_FAILURE);                                                                  \
+  }                                                                                        \
+}
+
+__global__ void display(Graph* graph)
+{
+    int x = blockIdx.x * 256 + threadIdx.x;
+
+    printf("%d", graph->m_excessFlow[x]);
+}
+
+//function added to check if the graph was copied successfully on GPU
+void count_active_cpu(Graph graph)
+{
+    int count = 0;
+    for (int i = 0; i < graph.m_maxHeight; i++)
+    {
+        if (graph.m_excessFlow[i] > 0 && graph.m_heights[i] < graph.m_maxHeight)
+            count++;
+    }
+    std::cout << "cpu_count = " << count << "\n";
+}
+
+//Copy a cpu array onto the device
+void copy_pointer(int** gpu_ptr, int* cpu_ptr, size_t size)
+{
+    //allocate array on the device
+    int *host_ptr;
+    cudaMalloc((void **) &host_ptr, size);
+    cudaCheckError();
+    //copy the cpu array on the device
+    cudaMemcpy(host_ptr, cpu_ptr, size, cudaMemcpyHostToDevice);
+    cudaCheckError();
+    //copy the gpu array adress on our pointer
+    cudaMemcpy(gpu_ptr, &host_ptr, sizeof(int*), cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+    cudaCheckError();
+}
+
+//Copy the CPU graph to the GPU
+void copy_graph(Graph *gpu_graph, Graph cpu_graph)
+{
+    //copy the structure
+    cudaMemcpy(gpu_graph, &cpu_graph, sizeof(Graph), cudaMemcpyHostToDevice);
+    cudaCheckError();
+
+    size_t matrix_size = cpu_graph.m_maxHeight * sizeof(int);
+
+    //copy every matrices used
+    copy_pointer(&(gpu_graph->m_excessFlow), cpu_graph.m_excessFlow, matrix_size);
+    copy_pointer(&(gpu_graph->m_heights), cpu_graph.m_heights, matrix_size);
+    copy_pointer(&(gpu_graph->m_topNeighbourCapacity), 
+        cpu_graph.m_topNeighbourCapacity, matrix_size);
+    copy_pointer(&(gpu_graph->m_bottomNeighbourCapacity),
+        cpu_graph.m_bottomNeighbourCapacity, matrix_size);
+    copy_pointer(&(gpu_graph->m_rightNeighbourCapacity),
+        cpu_graph.m_rightNeighbourCapacity, matrix_size);
+    copy_pointer(&(gpu_graph->m_leftNeighbourCapacity),
+        cpu_graph.m_leftNeighbourCapacity, matrix_size);
+    copy_pointer(&(gpu_graph->m_sourceCapacityToNodes),
+        cpu_graph.m_sourceCapacityToNodes, matrix_size);
+    copy_pointer(&(gpu_graph->m_sourceCapacityFromNodes),
+        cpu_graph.m_sourceCapacityFromNodes, matrix_size);
+    copy_pointer(&(gpu_graph->m_sinkCapacityToNodes),
+        cpu_graph.m_sinkCapacityToNodes, matrix_size);
+    copy_pointer(&(gpu_graph->m_sinkCapacityFromNodes),
+        cpu_graph.m_sinkCapacityFromNodes, matrix_size);
+}
+
+//copy the graph heights onto the swap
+__global__ void graph_to_swap(Graph *graph, int *swap)
+{
+    int x = blockIdx.x * 256 + threadIdx.x;
+    if (x >= graph->m_maxHeight)
+        return;
+
+    swap[x] = graph->m_heights[x];
+}
+
+//copy the swap heights onto the graph heights
+__global__ void swap_to_graph(Graph *graph, int *swap)
+{
+    int x = blockIdx.x * 256 + threadIdx.x;
+    if (x >= graph->m_maxHeight)
+        return;
+
+    graph->m_heights[x] = swap[x];
+}
+
+
+int main()
+{
+    Image image("../inputs/12003.jpg");
+    Image imageHelper("../inputs/12003_modified.jpg");
+    Graph graph(image, imageHelper);
+
+
+    count_active_cpu(graph);
+
+    cudaDeviceProp device;
+    cudaGetDeviceProperties(&device,0);
+
+    int blockSize = 256;
+    int numBlocks = (graph.m_maxHeight + blockSize - 1) / blockSize;
+
+    //allocate graph on GPU and copy the one initialize on CPU
+    Graph* g;
+    cudaMalloc((void **) &g, sizeof(Graph));
+    cudaCheckError();
+    copy_graph(g, graph);
+
+    //setup CPU counter
+    int c = 0;
+    int* count = &c;
+
+    //setup GPU counter
+    int* gpu_count;
+    cudaMalloc((void **)&gpu_count, sizeof(int));
+    cudaCheckError();
+    cudaDeviceSynchronize();
+    cudaMemcpy(gpu_count, count, sizeof(int), cudaMemcpyHostToDevice);
+    cudaCheckError();
+    cudaDeviceSynchronize();
+
+    //count active nodes
+    count_active<<<numBlocks, blockSize>>>(g, gpu_count);
+    cudaCheckError();
+    cudaDeviceSynchronize();
+
+    //copy the counter from GPU to CPU
+    cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
+    std::cout << "\ncount_gpu = " <<  *count << "\n";
+
+    //initialize swap heights
+    int* swap_heights;
+    cudaMalloc((void **)&swap_heights, graph.m_maxHeight * sizeof(int));
+    cudaCheckError();
+
+    //copy the graph heights onto the swap
+    graph_to_swap<<<numBlocks, blockSize>>>(g, swap_heights);
+
+    while(*count > 0)
+    {
+        push<<<numBlocks, blockSize>>>(g);
+        cudaDeviceSynchronize();
+
+        //update swap heights
+        relabel<<<numBlocks, blockSize>>>(g, swap_heights);
+        cudaDeviceSynchronize();
+
+        //copy the updated heights to the graph
+        swap_to_graph<<<numBlocks, blockSize>>>(g, swap_heights);
+        cudaDeviceSynchronize();
+
+        //set gpu counter to 0
+        cudaMemset(gpu_count,0,sizeof(int));
+        count_active<<<numBlocks, blockSize>>>(g, gpu_count);
+        cudaCheckError();
+        cudaDeviceSynchronize();
+
+        //copy GPU counter onto CPU counter for the while loop
+        cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
+        std::cout << *count << "\n";
+    }
+    std::cout << "Graph cut done\n";
+
+
+    //generate final image just like CPU version
+    int x = graph.m_maxHeight;
+
+    //copy graph heights to the CPU
+    int *final_heights = (int*)std::malloc(x * sizeof(int));
+    cudaMemcpy(final_heights, swap_heights, x * sizeof(int), cudaMemcpyDeviceToHost);
+
+    std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.m_height, std::vector<int>(graph.m_width, 0));
+    //auto visited = graph.dfs();
+    for (int i = 0; i < graph.m_height; i++)
+    {
+        for (int j = 0; j < graph.m_width; j++)
+        {
+            std::cout << x << " , " << i << " , " << j << "\n";
+            std::cout << x - (i * j) << "\n";
+            if (final_heights[i*graph.m_width + j] > 0)
+                out[i][j] = 1;
+        }
+    }
+
+    std::ofstream ofs ("out.ppm", std::ios::binary);
+    ofs << "P6\n" << graph.m_width << " " << graph.m_height << "\n255\n";
+    for (int i = 0; i < graph.m_height; i++)
+    {
+        for (int j = 0; j < graph.m_width; j++)
+        {
+            char r = (char)(255 * out[i][j]);
+            char g = (char)(255 * out[i][j]);
+            char b = (char)(255 * out[i][j]);
+            ofs << r << g << b;
+        }
+    }
+    ofs.close();
+    return 0;
+}
