@@ -184,7 +184,7 @@ int main()
     //auto visited = graph.dfs();
     for (int i = 0; i < graph.m_height; i++)
     {
-        std::cout << i << " / " << graph.m_height << "\n";
+        std::cout << i << " / " << graph.m_height - 1 << "\n";
         for (int j = 0; j < graph.m_width; j++)
         {
             if (final_heights[i*graph.m_width + j] > 0)
