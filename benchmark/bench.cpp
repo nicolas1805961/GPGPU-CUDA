@@ -5,8 +5,8 @@
 
 
 // Instanciate variables
-Image image("inputs/12003.jpg");
-Image imageHelper("inputs/12003_modified.jpg");
+Image image("../inputs/12003.jpg");
+Image imageHelper("../inputs/12003_modified.jpg");
 Graph graph(image, imageHelper);
 
 
