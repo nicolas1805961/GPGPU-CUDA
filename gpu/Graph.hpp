@@ -12,10 +12,8 @@ public:
     int *m_rightNeighbourCapacity;
     int *m_topNeighbourCapacity;
     int *m_bottomNeighbourCapacity;
-    int *m_sourceCapacityToNodes;
-    int *m_sourceCapacityFromNodes;
-    int *m_sinkCapacityFromNodes;
-    int *m_sinkCapacityToNodes;
+    int *m_sourceCapacity;
+    int *m_sinkCapacity;
 
     int m_maxHeight;
     int m_width;

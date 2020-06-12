@@ -2,7 +2,7 @@
 #include <limits>
 #include <stdio.h>
 
-__device__ int artificial_height = 10000;
+__device__ int artificial_height = 5;
 //Same as CPU initialization
 Graph::Graph(Image const& image, Image const& imageHelper)
 {
@@ -16,41 +16,45 @@ Graph::Graph(Image const& image, Image const& imageHelper)
     m_leftNeighbourCapacity = (int*)std::malloc(m_maxHeight * sizeof(int));
     m_rightNeighbourCapacity = (int*)std::malloc(m_maxHeight * sizeof(int));
     m_bottomNeighbourCapacity = (int*)std::malloc(m_maxHeight * sizeof(int));
-    m_sourceCapacityToNodes = (int*)std::malloc(m_maxHeight * sizeof(int));
-    m_sinkCapacityToNodes = (int*)std::malloc(m_maxHeight * sizeof(int));
-    m_sourceCapacityFromNodes = (int*)std::malloc(m_maxHeight * sizeof(int));
-    m_sinkCapacityFromNodes = (int*)std::malloc(m_maxHeight * sizeof(int));
+    m_sourceCapacity = (int*)std::malloc(m_maxHeight * sizeof(int));
+    m_sinkCapacity = (int*)std::malloc(m_maxHeight * sizeof(int));
 
+    for (int i = 0; i < m_maxHeight; i++)
+    {
+        m_excessFlow[i] = 0;
+        m_heights[i] = 0;
+        m_topNeighbourCapacity[i] = 0;
+        m_leftNeighbourCapacity[i] = 0;
+        m_rightNeighbourCapacity[i] = 0;
+        m_bottomNeighbourCapacity[i] = 0;
+        m_sourceCapacity[i] = 1;
+        m_sinkCapacity[i] = 1;
+    }
+    
     m_grayImage = image.getImageGray();
 
     // Ici je label les arrêtes entre les noeuds avec la distance en rgb entre chaque pixel (noeud = pixel)
-    for (int i = 0; i < m_height - 1; i++)
+    for (int i = 0; i < m_height * m_width; i++)
     {
-        for (int j = 0; j < m_width; j++)
+        if (i / m_width < m_height - 1)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * (i + 1) + j]), 2);
-            m_bottomNeighbourCapacity[m_width * i + j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            int distance = pow((m_grayImage[i] - m_grayImage[i + m_width]), 2);
+            m_bottomNeighbourCapacity[i] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
-    }
-    for (int i = 1; i < m_height; i++)
-    {
-        for (int j = 0; j < m_width; j++)
+        if (i / m_width > 0)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * (i - 1) + j]), 2);
-            m_topNeighbourCapacity[m_width * i + j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            int distance = pow((m_grayImage[i] - m_grayImage[i - m_width]), 2);
+            m_topNeighbourCapacity[i] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
-    }
-    for (int i = 0; i < m_height; i++)
-    {
-        for (int j = 1; j < m_width; j++)
+        if (i % m_width > 0)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * i + j - 1]), 2);
-            m_leftNeighbourCapacity[m_width * i + j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            int distance = pow((m_grayImage[i] - m_grayImage[i - 1]), 2);
+            m_leftNeighbourCapacity[i] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
-        for (int j = 0; j < m_width - 1; j++)
+        if (i % m_width != m_width - 1)
         {
-            int distance = pow((m_grayImage[m_width * i + j] - m_grayImage[m_width * i + j + 1]), 2);
-            m_rightNeighbourCapacity[m_width * i + j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            int distance = pow((m_grayImage[i] - m_grayImage[i + 1]), 2);
+            m_rightNeighbourCapacity[i] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
         }
     }
     //contient les indices des pixels noirs et blanc
@@ -70,14 +74,14 @@ Graph::Graph(Image const& image, Image const& imageHelper)
         if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 255)
         {
             white.push_back(i * 3);
-            m_sourceCapacityToNodes[i + i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
-            m_sinkCapacityFromNodes[i + i % m_width] = 0;
+            m_sourceCapacity[i] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sinkCapacity[i] = 0;
         }
         else if (ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 1] && ptrHelper[(i * 3)] == ptrHelper[(i * 3) + 2] && ptrHelper[(i * 3)] == 0)
         {
             black.push_back(i * 3);
-            m_sinkCapacityFromNodes[i + i % m_width] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
-            m_sourceCapacityToNodes[i + i % m_width] = 0;
+            m_sinkCapacity[i] = std::numeric_limits<int>::max(); //sqrt(pow(255, 2) * 3);
+            m_sourceCapacity[i] = 0;
         }
     }
 
@@ -100,41 +104,31 @@ Graph::Graph(Image const& image, Image const& imageHelper)
     float averageBackgroundGreen = sumIntensityBackgroundGreen / black.size();
     float averageBackgroundBlue = sumIntensityBackgroundBlue / black.size();
 
-    for (int i = 0; i < m_height; i++)
+    for (int i = 0; i < m_height * m_width; i++)
     {
-        for (int j = 0; j < m_width; j++)
-        {
-            uint8_t r = image.getImageRgb()[m_width * (i * 3) + (j * 3)];
-            uint8_t g = image.getImageRgb()[m_width * (i * 3) + (j * 3) + 1];
-            uint8_t b = image.getImageRgb()[m_width * (i * 3) + (j * 3) + 2];
+        uint8_t r = image.getImageRgb()[i * 3];
+        uint8_t g = image.getImageRgb()[i * 3 + 1];
+        uint8_t b = image.getImageRgb()[i * 3 + 2];
 
-            float df = sqrt(pow(r - averageForegroundRed, 2) + pow(g - averageForegroundGreen, 2) + pow(b - averageForegroundBlue, 2));
-            float db = sqrt(pow(r - averageBackgroundRed, 2) + pow(g - averageBackgroundGreen, 2) + pow(b - averageBackgroundBlue, 2));
+        float df = sqrt(pow(r - averageForegroundRed, 2) + pow(g - averageForegroundGreen, 2) + pow(b - averageForegroundBlue, 2));
+        float db = sqrt(pow(r - averageBackgroundRed, 2) + pow(g - averageBackgroundGreen, 2) + pow(b - averageBackgroundBlue, 2));
 
-            if (m_sourceCapacityToNodes[m_width * i + j] == 1)
-                m_sourceCapacityToNodes[m_width * i + j] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
-            if (m_sinkCapacityFromNodes[m_width * i + j] == 1)
-                m_sinkCapacityFromNodes[m_width * i + j] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
-        }
+        if (m_sourceCapacity[i] == 1)
+            m_sourceCapacity[i] = ((df / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(pf);;
+        if (m_sinkCapacity[i] == 1)
+            m_sinkCapacity[i] = ((db / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3); //-log(1 - pf);
     }
     //ici j'initialise l'excess flow en saturant les arrêtes(capacity) partant de la source. Et je créer la capacité dans le sens inverse.
-    for (int i = 0; i < m_height; i++)
+    for (int i = 0; i < m_height * m_width; i++)
     {
-        for (int j = 0; j < m_width; j++)
-        {
-            m_excessFlow[m_width * i + j] = m_sourceCapacityToNodes[m_width * i + j] - m_sinkCapacityFromNodes[m_width * i + j];
-            m_sourceCapacityFromNodes[m_width * i + j]= m_sourceCapacityToNodes[m_width * i + j];
-            m_sourceCapacityToNodes[m_width * i + j] = 0;
-        }
+        m_excessFlow[i] = m_sourceCapacity[i] - m_sinkCapacity[i];
     }
 }
 
 //same as CPU push, added atomic operations to avoid random states
 __global__ void push(Graph* graph)
 {
-    int x = blockIdx.x * 256 + threadIdx.x;
-    int i = x / graph->m_width;
-    int j = x % graph->m_width;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
 
     int* m_excessFlow = graph->m_excessFlow;
     int* m_heights = graph->m_heights;
@@ -152,66 +146,64 @@ __global__ void push(Graph* graph)
     //artificially changed maxHeight to try to have a faster result
     m_maxHeight = artificial_height;
 
-    if (m_excessFlow[i*m_width+j] > 0 && m_heights[i*m_width+j] < m_maxHeight)
+    if (m_excessFlow[x] > 0 && m_heights[x] < m_maxHeight)
     {
-        if (j > 0 && m_heights[i*m_width + j - 1] == m_heights[i*m_width+j] - 1)
+        if (x % m_width > 0 && m_heights[x - 1] == m_heights[x] - 1)
         {
-            int flow = fminf(m_leftNeighbourCapacity[i*m_width+j], m_excessFlow[i*m_width+j]);
+            int flow = fminf(m_leftNeighbourCapacity[x], m_excessFlow[x]);
             //m_excessFlow[i*m_width+j] -= flow;
-            atomicSub(&m_excessFlow[i*m_width+j],flow);
+            atomicSub(&m_excessFlow[x],flow);
             //m_excessFlow[i*m_width+j - 1] += flow;
-            atomicAdd(&m_excessFlow[i*m_width+j - 1],flow);
+            atomicAdd(&m_excessFlow[x - 1],flow);
             //m_leftNeighbourCapacity[i*m_width+j] -= flow;
-            atomicSub(&m_leftNeighbourCapacity[i*m_width+j], flow);
+            atomicSub(&m_leftNeighbourCapacity[x], flow);
             //m_rightNeighbourCapacity[i*m_width+j - 1] += flow;
-            atomicAdd(&m_rightNeighbourCapacity[i*m_width+j-1],flow);
+            atomicAdd(&m_rightNeighbourCapacity[x-1],flow);
         }
-        if (j < m_width - 1 && m_heights[i*m_width+j + 1] == m_heights[i*m_width+j] - 1)
+        if (x % m_width != m_width - 1 && m_heights[x + 1] == m_heights[x] - 1)
         {
-            int flow = fminf(m_rightNeighbourCapacity[i*m_width+j], m_excessFlow[i*m_width+j]);
+            int flow = fminf(m_rightNeighbourCapacity[x], m_excessFlow[x]);
             //m_excessFlow[i*m_width+j] -= flow;
-            atomicSub(&m_excessFlow[i*m_width+j],flow);
+            atomicSub(&m_excessFlow[x],flow);
             //m_excessFlow[i*m_width+j + 1] += flow;
-            atomicAdd(&m_excessFlow[i*m_width+j + 1],flow);
+            atomicAdd(&m_excessFlow[x + 1],flow);
             //m_rightNeighbourCapacity[i*m_width+j] -= flow;
-            atomicSub(&m_rightNeighbourCapacity[i*m_width+j], flow);
+            atomicSub(&m_rightNeighbourCapacity[x], flow);
             //m_leftNeighbourCapacity[i*m_width+j + 1] += flow;
-            atomicAdd(&m_leftNeighbourCapacity[i*m_width+j+1],flow);
+            atomicAdd(&m_leftNeighbourCapacity[x+1],flow);
         }
-        if (i > 0 && m_heights[(i - 1)*m_width+j] == m_heights[i*m_width+j] - 1)
+        if (x / m_width > 0 && m_heights[x - m_width] == m_heights[x] - 1)
         {
-            int flow = fminf(m_topNeighbourCapacity[i*m_width+j], m_excessFlow[i*m_width+j]);
+            int flow = fminf(m_topNeighbourCapacity[x], m_excessFlow[x]);
             //m_excessFlow[i*m_width+j] -= flow;
-            atomicSub(&m_excessFlow[i*m_width+j],flow);
+            atomicSub(&m_excessFlow[x],flow);
             //m_excessFlow[(i-1)*m_width+j] += flow;
-            atomicAdd(&m_excessFlow[(i-1)*m_width+j],flow);
+            atomicAdd(&m_excessFlow[x - m_width],flow);
             //m_topNeighbourCapacity[i*m_width+j] -= flow;
-            atomicSub(&m_topNeighbourCapacity[i*m_width+j], flow);
+            atomicSub(&m_topNeighbourCapacity[x], flow);
             //m_bottomNeighbourCapacity[(i-1)*m_width+j] += flow;
-            atomicAdd(&m_bottomNeighbourCapacity[(i-1)*m_width+j],flow);
+            atomicAdd(&m_bottomNeighbourCapacity[x - m_width],flow);
         }
-        if (i < m_height - 1 && m_heights[(i + 1)*m_width+j] == m_heights[i*m_width+j] - 1)
+        if (x / m_width < m_height - 1 && m_heights[x + m_width] == m_heights[x] - 1)
         {
-            int flow = fminf(m_bottomNeighbourCapacity[i*m_width+j], m_excessFlow[i*m_width+j]);
+            int flow = fminf(m_bottomNeighbourCapacity[x], m_excessFlow[x]);
             //m_excessFlow[i*m_width+j] -= flow;
-            atomicSub(&m_excessFlow[i*m_width+j],flow);
+            atomicSub(&m_excessFlow[x],flow);
             //m_excessFlow[(i+1)*m_width + j] += flow;
-            atomicAdd(&m_excessFlow[(i+1)*m_width+j],flow);
+            atomicAdd(&m_excessFlow[x + m_width],flow);
             //m_bottomNeighbourCapacity[i*m_width+j] -= flow;
-            atomicSub(&m_bottomNeighbourCapacity[i*m_width+j], flow);
+            atomicSub(&m_bottomNeighbourCapacity[x], flow);
             //m_topNeighbourCapacity[(i + 1)*m_width+j] += flow;
-            atomicAdd(&m_topNeighbourCapacity[(i+1)*m_width+j],flow);
+            atomicAdd(&m_topNeighbourCapacity[x + m_width],flow);
         }
-    }
+    } 
     //printf("i=%d j=%d\n",i, j);
 }
 
 //Same as CPU relabel, but pushing values on swap and reading from actual heights
 __global__ void relabel(Graph* graph, int* swap_heights)
 {
-    int x = blockIdx.x * 256 + threadIdx.x;
-    int i = x / graph->m_width;
-    int j = x % graph->m_width;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
 
     int* m_excessFlow = graph->m_excessFlow;
     int* m_heights = graph->m_heights;
@@ -228,22 +220,18 @@ __global__ void relabel(Graph* graph, int* swap_heights)
     m_maxHeight = artificial_height;
 
 
-    if (m_excessFlow[i*m_width + j] > 0 && m_heights[i*m_width+j] < m_maxHeight)
+    if (m_excessFlow[x] > 0 && m_heights[x] < m_maxHeight)
     {
         auto myHeight = m_maxHeight;
-        /*if (m_sinkCapacityFromNodes[i][j] > 0)
-            myHeight = std::min(myHeight, 0);*/
-        if (m_leftNeighbourCapacity[i*m_width+j] > 0)
-            myHeight = min(myHeight, m_heights[i*m_width + j - 1] + 1);
-        if (m_rightNeighbourCapacity[i*m_width+j] > 0)
-            myHeight = min(myHeight, m_heights[i*m_width + j + 1] + 1);
-        if (m_topNeighbourCapacity[i*m_width+j] > 0)
-            myHeight = min(myHeight, m_heights[(i-1)*m_width + j] + 1);
-        if (m_bottomNeighbourCapacity[i*m_width+j] > 0)
-            myHeight = min(myHeight, m_heights[(i+1)*m_width+j] + 1);
-        /*if (m_sourceCapacityFromNodes[i][j] > 0)
-            myHeight = std::min(myHeight, m_maxHeight);*/
-        swap_heights[i*m_width+j] = myHeight;
+        if (m_leftNeighbourCapacity[x] > 0)
+            myHeight = min(myHeight, m_heights[x - 1] + 1);
+        if (m_rightNeighbourCapacity[x] > 0)
+            myHeight = min(myHeight, m_heights[x + 1] + 1);
+        if (m_topNeighbourCapacity[x] > 0)
+            myHeight = min(myHeight, m_heights[x - m_width] + 1);
+        if (m_bottomNeighbourCapacity[x] > 0)
+            myHeight = min(myHeight, m_heights[x + m_width] + 1);
+        swap_heights[x] = myHeight;
     }
 }
 

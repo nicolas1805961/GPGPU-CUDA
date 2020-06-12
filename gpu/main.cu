@@ -69,14 +69,10 @@ void copy_graph(Graph *gpu_graph, Graph cpu_graph)
         cpu_graph.m_rightNeighbourCapacity, matrix_size);
     copy_pointer(&(gpu_graph->m_leftNeighbourCapacity),
         cpu_graph.m_leftNeighbourCapacity, matrix_size);
-    copy_pointer(&(gpu_graph->m_sourceCapacityToNodes),
-        cpu_graph.m_sourceCapacityToNodes, matrix_size);
-    copy_pointer(&(gpu_graph->m_sourceCapacityFromNodes),
-        cpu_graph.m_sourceCapacityFromNodes, matrix_size);
-    copy_pointer(&(gpu_graph->m_sinkCapacityToNodes),
-        cpu_graph.m_sinkCapacityToNodes, matrix_size);
-    copy_pointer(&(gpu_graph->m_sinkCapacityFromNodes),
-        cpu_graph.m_sinkCapacityFromNodes, matrix_size);
+    copy_pointer(&(gpu_graph->m_sinkCapacity),
+        cpu_graph.m_sinkCapacity, matrix_size);
+    copy_pointer(&(gpu_graph->m_sourceCapacity),
+        cpu_graph.m_sourceCapacity, matrix_size);
 }
 
 //copy the graph heights onto the swap
@@ -188,10 +184,9 @@ int main()
     //auto visited = graph.dfs();
     for (int i = 0; i < graph.m_height; i++)
     {
+        std::cout << i << " / " << graph.m_height << "\n";
         for (int j = 0; j < graph.m_width; j++)
         {
-            std::cout << x << " , " << i << " , " << j << "\n";
-            std::cout << x - (i * j) << "\n";
             if (final_heights[i*graph.m_width + j] > 0)
                 out[i][j] = 1;
         }
