@@ -94,6 +94,8 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image
         sumIntensityBackgroundGreen += ptr[black[i] + 1];
         sumIntensityBackgroundBlue += ptr[black[i] + 2];
     }
+    if (white.size() == 0 || black.size() == 0)
+        std::cerr << "!!! ERROR !!! : Are you sure images are loaded properly ?" << std::endl;
     float averageForegroundRed = sumIntensityForegroundRed / white.size();
     float averageForegroundGreen = sumIntensityForegroundGreen / white.size();
     float averageForegroundBlue = sumIntensityForegroundBlue / white.size();
