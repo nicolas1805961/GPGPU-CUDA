@@ -67,6 +67,12 @@ Although the maximum height was decrease to five or ten, the run time was still 
 \\
 Lowering the maximum height resulted in a 15, 20 minute running time. This was still too high. It was found out that calling the push and relabel function on every nodes would decrease the run time significantly. The check for active nodes was now done by the push and relabel function. It was no longer needed to write a separate function to retrieve the right active nodes. It was also no longer required to loop on every pixels to find active nodes. This decreased the run time to 10 seconds which was a huge improvement.
 
+\subsection{Issue 4}
+
+For a long time we simply checked the height value of each pixel to get the min cut of the graph and thus decide the color of each pixel.\\
+\\
+Since we were not satisfied with our output segmented image, it was decided to change the way we recovered the min cut. Although there were very little explanation about the way the BFS algorithm should have been implemented in NVIDIA slides, the algorithm was successfully implemented. It was a little bit of a disapointment though since this did not change the look of the output segmented image. This led us to understand that this non optimal segmented image resulted from a flaw in the core algorithm (maybe the weights of the links).
+
 \section{GPU implementation}
 
 \section{Bottlenecks}
@@ -89,6 +95,7 @@ Lowering the maximum height resulted in a 15, 20 minute running time. This was s
 Nicolas\\
 - CPU implementation and debug\\
 - Report\\
+- GPU debug\\
 \\
 Alexandre\\
 - CPU debug\\

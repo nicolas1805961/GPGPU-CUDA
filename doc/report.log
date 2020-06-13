@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.11)  11 JUN 2020 17:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.11)  13 JUN 2020 23:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -328,89 +328,65 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 LaTeX Info: Redefining \degres on input line 13.
 LaTeX Info: Redefining \dots on input line 13.
 LaTeX Info: Redefining \up on input line 13.
- (/usr/local/texlive/2020/texmf-dist/tex/generic/babel/locale/en/babel-english.tex
-Package babel Info: Importing basic data for english
-(babel)             from babel-en.ini. Reported on input line 11.
-)
+ [1
 
-Package babel Warning: \englishtoday not set. Please, define
-(babel)                it in the preamble with something like:
-(babel)                \renewcommand\englishtoday{..}
-(babel)                Reported on input line 16.
-
-[1
-
-{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-
-Package babel Warning: \englishcontentsname not set. Please, define
-(babel)                it in the preamble with something like:
-(babel)                \renewcommand\englishcontentsname{..}
-(babel)                Reported on input line 20.
-
-No file report.toc.
+{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (/home/nico/GPGPU-CUDA/doc/report.toc)
 \tf@toc=\write3
 \openout3 = `report.toc'.
 
-[2]
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 35.
+ [2]
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 34.
  (/usr/local/texlive/2020/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-/home/nico/GPGPU-CUDA/doc/report.tex:50: Missing $ inserted.
-<inserted text> 
-                $
-l.50 The stb_
-             load library was used to load jpg images both in grayscale and ...
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
+Underfull \hbox (badness 10000) in paragraph at lines 52--55
 
-/home/nico/GPGPU-CUDA/doc/report.tex:54: Missing $ inserted.
-<inserted text> 
-                $
-l.54 
-     
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-
-Overfull \hbox (7.08347pt too wide) in paragraph at lines 42--54
-\T1/cmr/m/n/10 The stb$[]\OML/cmm/m/it/10 oadlibrarywasusedtoloadjpgimagesbothingrayscaleandRGBcolorspace:[] 
- []
-
-
-Overfull \hbox (27.94637pt too wide) in paragraph at lines 42--54
-\OML/cmm/m/it/10 Imageswerestoredasonedimensionalvectorswithcontiguousred; greenandbluepixels:[] 
- []
-
-
-Overfull \hbox (3.01582pt too wide) in paragraph at lines 42--54
-\OML/cmm/m/it/10 thesizeofthesevectorswerethreetimesaslargeasthenumberofpixelsinanimage:[] 
  []
 
 [1]
-Underfull \hbox (badness 10000) in paragraph at lines 93--105
+Underfull \hbox (badness 10000) in paragraph at lines 58--63
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 93--105
+Underfull \hbox (badness 10000) in paragraph at lines 58--63
 
  []
 
-[2] [3] (/home/nico/GPGPU-CUDA/doc/report.aux) ) 
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--69
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 72--75
+
+ []
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 94--107
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 94--107
+
+ []
+
+[3] (/home/nico/GPGPU-CUDA/doc/report.aux) ) 
 Here is how much of TeX's memory you used:
- 10096 strings out of 480478
- 171635 string characters out of 5899580
- 473934 words of memory out of 5000000
- 25972 multiletter control sequences out of 15000+600000
+ 9955 strings out of 480478
+ 168308 string characters out of 5899580
+ 474934 words of memory out of 5000000
+ 25834 multiletter control sequences out of 15000+600000
  542591 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  51i,6n,37p,1012b,426s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on /home/nico/GPGPU-CUDA/doc/report.pdf (5 pages, 149889 bytes).
+{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
+Output written on /home/nico/GPGPU-CUDA/doc/report.pdf (5 pages, 135876 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
- 43 compressed objects within 1 object stream
+ 53 PDF objects out of 1000 (max. 8388607)
+ 37 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
