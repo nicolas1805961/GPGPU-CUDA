@@ -4,7 +4,7 @@
 
 __device__ int artificial_height = 5;
 //Same as CPU initialization
-Graph::Graph(Image const& image, Image const& imageHelper)
+GraphGPU::GraphGPU(Image const& image, Image const& imageHelper)
 {
     m_maxHeight = image.getWidth() * image.getHeight();
     m_width = image.getWidth();
@@ -126,7 +126,7 @@ Graph::Graph(Image const& image, Image const& imageHelper)
 }
 
 //same as CPU push, added atomic operations to avoid random states
-__global__ void push(Graph* graph)
+__global__ void push(GraphGPU* graph)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -201,7 +201,7 @@ __global__ void push(Graph* graph)
 }
 
 //Same as CPU relabel, but pushing values on swap and reading from actual heights
-__global__ void relabel(Graph* graph, int* swap_heights)
+__global__ void relabel(GraphGPU* graph, int* swap_heights)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -236,7 +236,7 @@ __global__ void relabel(Graph* graph, int* swap_heights)
 }
 
 //count how many nodes are active
-__global__ void count_active(Graph* graph, int* count)
+__global__ void count_active(GraphGPU* graph, int* count)
 {
     int x = blockIdx.x * 256 + threadIdx.x;
     /*int i = x / graph->m_width;

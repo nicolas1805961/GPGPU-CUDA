@@ -3,11 +3,11 @@ CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c++17 -g -fsanitize=address -Icp
 LDFLAGS =  -fsanitize=address
 
 GXX = nvcc
-GXXFLAGS = -Igpu/include
+GXXFLAGS = -Igpu/include -Icpu/include
 
 GSRC = gpu/src/main.cu \
 	   gpu/src/Graph_gpu.cu \
-	   gpu/src/Image.cpp
+	   cpu/src/Image.cpp
 GEXEC = GPU
 
 

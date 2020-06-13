@@ -3,7 +3,7 @@
 #include "Image.hpp"
 #include <cmath>
 
-class Graph
+class GraphGPU
 {
 public:
     int *m_excessFlow;
@@ -23,9 +23,9 @@ public:
     uint8_t *m_rgbImageHelper;
     uint8_t *m_grayImageHelper;
 
-    Graph(Image const& image, Image const& imageHelper);
+    GraphGPU(Image const& image, Image const& imageHelper);
 };
 
-__global__ void push(Graph* g);
-__global__ void relabel(Graph* g, int* swap_heights);
-__global__ void count_active(Graph* g, int* count);
+__global__ void push(GraphGPU* g);
+__global__ void relabel(GraphGPU* g, int* swap_heights);
+__global__ void count_active(GraphGPU* g, int* count);

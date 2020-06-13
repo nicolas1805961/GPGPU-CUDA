@@ -1,14 +1,17 @@
-#include "Graph.hpp"
-#include "Image.hpp"
-#include "graphcut_cpu.hpp"
 #include <benchmark/benchmark.h>
 
+#include "Graph.hpp"
+#include "Graph_gpu.hpp"
+#include "Image.hpp"
+#include "graphcut_cpu.hpp"
+#include "graphcut_gpu.hpp"
 
 // Instanciate variables
 Image image("../inputs/12003.jpg");
 Image imageHelper("../inputs/12003_modified.jpg");
-Graph graph(image, imageHelper);
 
+Graph graph(image, imageHelper);
+GraphGPU graphgpu(image, imageHelper);
 
 void BM_cpu(benchmark::State& st)
 {
@@ -26,6 +29,7 @@ void BM_gpu(benchmark::State& st)
 {
     for (auto _ : st) {
         // FIXME : call GPU function here
+        graphcut_gpu(graphgpu);
     }
 
     st.counters["frame_rate"] = benchmark::Counter(

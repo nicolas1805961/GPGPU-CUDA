@@ -40,12 +40,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 set(SOURCES
-        benchmark/bench.cpp
+        benchmark/bench.cu
         cpu/src/Graph.cpp
         cpu/src/Image.cpp
         cpu/src/graphcut_cpu.cpp
+        gpu/src/Graph_gpu.cu
+        gpu/src/graphcut_gpu.cu
 )
+
 add_executable(bench ${SOURCES})
-target_include_directories(bench PRIVATE cpu/include)
-target_compile_features(bench PUBLIC cxx_std_17)
+target_include_directories(bench PRIVATE cpu/include gpu/include)
+target_compile_features(bench PUBLIC cxx_std_14)
 target_link_libraries(bench PRIVATE spdlog::spdlog benchmark)

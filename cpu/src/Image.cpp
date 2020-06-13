@@ -5,6 +5,7 @@
 Image::Image(std::string const& name)
 {
     m_rgbImage = stbi_load(name.c_str(), &m_width, &m_height, &m_bpp, 3);
+    m_grayImage = stbi_load(name.c_str(), &m_width, &m_height, &m_bpp, 1);
 }
 
 int Image::getWidth() const
@@ -22,7 +23,13 @@ uint8_t* Image::getImageRgb() const
     return m_rgbImage;
 }
 
+uint8_t* Image::getImageGray() const
+{
+    return m_grayImage;
+}
+
 Image::~Image()
 {
     stbi_image_free(m_rgbImage);
+    stbi_image_free(m_grayImage);
 }

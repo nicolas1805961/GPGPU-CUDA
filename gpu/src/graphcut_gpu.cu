@@ -96,15 +96,8 @@ __global__ void swap_to_graph(GraphGPU *graph, int *swap)
 }
 
 
-int main()
+void graphcut_gpu(GraphGPU graph)
 {
-    Image image("inputs/12003.jpg");
-    Image imageHelper("inputs/12003_modified.jpg");
-    GraphGPU graph(image, imageHelper);
-
-
-    count_active_cpu(graph);
-
     cudaDeviceProp device;
     cudaGetDeviceProperties(&device,0);
 
@@ -137,7 +130,6 @@ int main()
 
     //copy the counter from GPU to CPU
     cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
-    std::cout << "\ncount_gpu = " <<  *count << "\n";
 
     //initialize swap heights
     int* swap_heights;
@@ -170,40 +162,4 @@ int main()
         cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
         std::cout << *count << "\n";
     }
-    std::cout << "GraphGPU cut done\n";
-
-
-    //generate final image just like CPU version
-    int x = graph.m_maxHeight;
-
-    //copy graph heights to the CPU
-    int *final_heights = (int*)std::malloc(x * sizeof(int));
-    cudaMemcpy(final_heights, swap_heights, x * sizeof(int), cudaMemcpyDeviceToHost);
-
-    std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.m_height, std::vector<int>(graph.m_width, 0));
-    //auto visited = graph.dfs();
-    for (int i = 0; i < graph.m_height; i++)
-    {
-        std::cout << i << " / " << graph.m_height - 1 << "\n";
-        for (int j = 0; j < graph.m_width; j++)
-        {
-            if (final_heights[i*graph.m_width + j] > 0)
-                out[i][j] = 1;
-        }
-    }
-
-    std::ofstream ofs ("out.ppm", std::ios::binary);
-    ofs << "P6\n" << graph.m_width << " " << graph.m_height << "\n255\n";
-    for (int i = 0; i < graph.m_height; i++)
-    {
-        for (int j = 0; j < graph.m_width; j++)
-        {
-            char r = (char)(255 * out[i][j]);
-            char g = (char)(255 * out[i][j]);
-            char b = (char)(255 * out[i][j]);
-            ofs << r << g << b;
-        }
-    }
-    ofs.close();
-    return 0;
 }
