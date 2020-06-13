@@ -1,5 +1,5 @@
 #include "Image.hpp"
-#include "Graph.hpp"
+#include "Graph_gpu.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -98,8 +98,8 @@ __global__ void swap_to_graph(Graph *graph, int *swap)
 
 int main()
 {
-    Image image("../inputs/12003.jpg");
-    Image imageHelper("../inputs/12003_modified.jpg");
+    Image image("inputs/12003.jpg");
+    Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
 
 

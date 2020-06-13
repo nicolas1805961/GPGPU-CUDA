@@ -1,4 +1,4 @@
-#include "Graph.hpp"
+#include "Graph_gpu.hpp"
 #include <limits>
 #include <stdio.h>
 
