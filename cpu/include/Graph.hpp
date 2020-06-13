@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <memory>
 #include <stack>
+#include <list>
 
 class Graph
 {

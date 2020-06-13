@@ -21,7 +21,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image
             int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * (i + 1) + j) * 3) + 1]), 2);
             int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * (i + 1) + j) * 3) + 2]), 2);
             int distance = redDistance + greenDistance + blueDistance;
-            m_bottomNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            m_bottomNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
         }
     }
     for (int i = 1; i < m_height; i++)
@@ -32,7 +32,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image
             int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * (i - 1) + j) * 3) + 1]), 2);
             int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * (i - 1) + j) * 3) + 2]), 2);
             int distance = redDistance + greenDistance + blueDistance;
-            m_topNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            m_topNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
         }
     }
     for (int i = 0; i < m_height; i++)
@@ -43,7 +43,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image
             int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * i + j) * 3) - 2]), 2);
             int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * i + j) * 3) - 1]), 2);
             int distance = redDistance + greenDistance + blueDistance;
-            m_leftNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            m_leftNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
         }
         for (int j = 0; j < m_width - 1; j++)
         {
@@ -51,7 +51,7 @@ Graph::Graph(Image const& image, Image const& imageHelper): m_maxHeight(5/*image
             int greenDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 1] - image.getImageRgb()[((m_width * i + j) * 3) + 4]), 2);
             int blueDistance = pow((image.getImageRgb()[((m_width * i + j) * 3) + 2] - image.getImageRgb()[((m_width * i + j) * 3) + 5]), 2);
             int distance = redDistance + greenDistance + blueDistance;
-            m_rightNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2))) - 1) * -sqrt(pow(255, 2));
+            m_rightNeighbourCapacity[i][j] = ((sqrt(distance) / sqrt(pow(255, 2) * 3)) - 1) * -sqrt(pow(255, 2) * 3);
         }
     }
     //contient les indices des pixels noirs et blanc
@@ -286,29 +286,43 @@ int Graph::getHeight()
 std::vector<std::vector<bool>> Graph::dfs()
 {
     std::vector<std::vector<bool>> visited = std::vector<std::vector<bool>>(m_height, std::vector<bool>(m_width, false));
-    std::stack<std::pair<int, int>> stack;
+    std::list<std::pair<int, int>> queue;
     for (int i = 0; i < m_height; i++)
     {
         for (int j = 0; j < m_width; j++)
         {
-            if (m_sourceCapacity[i][j] > 0)
-                stack.push(std::make_pair(i, j));
+            if (m_sinkCapacity[i][j] > 0 && m_heights[i][j] <= 0)
+            {
+                visited[i][j] = true;
+                queue.push_back(std::make_pair(i, j));
+            }
         }
     }
-    while (!stack.empty())
+    while (!queue.empty())
     {
-        auto s = stack.top(); 
-        stack.pop();
-        visited[s.first][s.second] = true;
-        if (m_leftNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first][s.second - 1])
-            stack.push(std::make_pair(s.first, s.second - 1));
-        if (m_rightNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first][s.second + 1])
-            stack.push(std::make_pair(s.first, s.second + 1));
-        if (m_bottomNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first + 1][s.second])
-            stack.push(std::make_pair(s.first + 1, s.second));
-        if (m_topNeighbourCapacity[s.first][s.second] > 0 && !visited[s.first - 1][s.second])
-            stack.push(std::make_pair(s.first - 1, s.second));
-        std::cout << stack.size() << "\n";
+        auto s = queue.front(); 
+        queue.pop_front();
+        if (s.second < m_width - 1 && m_leftNeighbourCapacity[s.first][s.second + 1] > 0 && !visited[s.first][s.second + 1] && m_heights[s.first][s.second + 1] <= 0)
+        {
+            visited[s.first][s.second + 1] = true;
+            queue.push_back(std::make_pair(s.first, s.second + 1));
+        }
+        if (s.second > 0 && m_rightNeighbourCapacity[s.first][s.second - 1] > 0 && !visited[s.first][s.second - 1] && m_heights[s.first][s.second - 1] <= 0)
+        {
+            visited[s.first][s.second - 1] = true;
+            queue.push_back(std::make_pair(s.first, s.second - 1));
+        }
+        if (s.first > 0 && m_bottomNeighbourCapacity[s.first - 1][s.second] > 0 && !visited[s.first - 1][s.second] && m_heights[s.first - 1][s.second] <= 0)
+        {
+            visited[s.first - 1][s.second] = true;
+            queue.push_back(std::make_pair(s.first - 1, s.second));
+        }
+        if (s.first < m_height - 1 && m_topNeighbourCapacity[s.first + 1][s.second] > 0 && !visited[s.first + 1][s.second] && m_heights[s.first + 1][s.second] <= 0)
+        {
+            visited[s.first + 1][s.second] = true;
+            queue.push_back(std::make_pair(s.first + 1, s.second));
+        }
+        std::cout << queue.size() << "\n";
     }
     return visited;
 }

@@ -21,13 +21,14 @@ int main()
                 graph.getHeight(),
                 std::vector<int>(graph.getWidth(), 0)
         );
-    //auto visited = graph.dfs();
+    auto visited = graph.dfs();
     for (int i = 0; i < graph.getHeight(); i++)
     {
         std::cout << i << " / " << graph.getHeight() << "\n";
         for (int j = 0; j < graph.getWidth(); j++)
         {
-            if (graph.getHeights()[i][j] > 0)
+            /*std::cout << "i = " << i << ", j = " << j << ", bottom = " << graph.getBottomNeighbourCapacity()[i][j] << ", top = " << graph.getTopNeighbourCapacity()[i][j] << ", left = " << graph.getLeftNeighbourCapacity()[i][j] << ", right = " << graph.getRightNeighbourCapacity()[i][j] << "\n";*/
+            if (visited[i][j]/*graph.getHeights()[i][j] > 0*/)
                 out[i][j] = 1;
         }
     }
