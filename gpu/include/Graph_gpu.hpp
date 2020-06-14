@@ -29,3 +29,4 @@ public:
 __global__ void push(GraphGPU* g);
 __global__ void relabel(GraphGPU* g, int* swap_heights);
 __global__ void count_active(GraphGPU* g, int* count);
+__global__ void setImage(GraphGPU* graph, int *out);

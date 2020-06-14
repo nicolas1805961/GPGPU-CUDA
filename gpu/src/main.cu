@@ -176,33 +176,28 @@ int main()
     //generate final image just like CPU version
     int x = graph.m_maxHeight;
 
-    //copy graph heights to the CPU
-    int *final_heights = (int*)std::malloc(x * sizeof(int));
-    cudaMemcpy(final_heights, swap_heights, x * sizeof(int), cudaMemcpyDeviceToHost);
-
-    std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.m_height, std::vector<int>(graph.m_width, 0));
+    int *outDevice;
+    int *out = (int*)std::malloc(graph.m_maxHeight * sizeof(int));
+    memset(out, 0, graph.m_maxHeight * sizeof(int));
+    cudaMalloc((void **)&outDevice, graph.m_maxHeight * sizeof(int));
+    cudaCheckError();
+    cudaMemcpy(outDevice, out, graph.m_maxHeight * sizeof(int), cudaMemcpyHostToDevice);
+    cudaCheckError();
+    setImage<<<numBlocks, blockSize>>>(g, outDevice);
+    cudaCheckError();
+    cudaDeviceSynchronize();
+    cudaMemcpy(out, outDevice, graph.m_maxHeight * sizeof(int), cudaMemcpyDeviceToHost);
+    //std::vector<std::vector<int>> out = std::vector<std::vector<int>>(graph.m_height, std::vector<int>(graph.m_width, 0));
     //auto visited = graph.dfs();
-    for (int i = 0; i < graph.m_height; i++)
-    {
-        std::cout << i << " / " << graph.m_height - 1 << "\n";
-        for (int j = 0; j < graph.m_width; j++)
-        {
-            if (final_heights[i*graph.m_width + j] > 0)
-                out[i][j] = 1;
-        }
-    }
 
     std::ofstream ofs ("out.ppm", std::ios::binary);
     ofs << "P6\n" << graph.m_width << " " << graph.m_height << "\n255\n";
-    for (int i = 0; i < graph.m_height; i++)
+    for (int i = 0; i < graph.m_maxHeight; i++)
     {
-        for (int j = 0; j < graph.m_width; j++)
-        {
-            char r = (char)(255 * out[i][j]);
-            char g = (char)(255 * out[i][j]);
-            char b = (char)(255 * out[i][j]);
-            ofs << r << g << b;
-        }
+        char r = (char)(255 * out[i]);
+        char g = (char)(255 * out[i]);
+        char b = (char)(255 * out[i]);
+        ofs << r << g << b;
     }
     ofs.close();
     return 0;

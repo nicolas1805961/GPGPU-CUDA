@@ -255,3 +255,9 @@ __global__ void count_active(GraphGPU* graph, int* count)
     }
 }
 
+__global__ void setImage(GraphGPU* graph, int *out)
+{
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    if (graph->m_heights[x] > 0)
+        out[x] = 1;
+}
