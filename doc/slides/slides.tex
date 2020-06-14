@@ -102,6 +102,68 @@ background
 \begin{frame}{GPU implementation}
 \end{frame}
 
+\begin{frame}{GPU implementation}
+$\bullet$ Closest to CPU implementation
+\end{frame}
+
+\begin{frame}{GPU implementation}
+$\bullet$ Closest to CPU implementation \\
+$\bullet$ Matrices are 1D \\
+\end{frame}
+
+\begin{frame}{GPU implementation}
+$\bullet$ Closest to CPU implementation \\
+$\bullet$ Matrices are 1D \\
+$\bullet$ Use of a swap for the relabel \\
+\end{frame}
+
+\begin{frame}{GPU implementation}
+    \begin{center}
+        \includegraphics[scale=0.4]{../pics/gpu_diagram.jpg}
+    \end{center}
+\end{frame}
+
+%%% BOTTLENECKS
+\begin{frame}{Bottlenecks}
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+    \begin{center}
+        \includegraphics[scale=0.4]{../pics/gpu_prof1_cut.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+$\bullet$ count\_active using atomic operations \\
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+$\bullet$ count\_active using atomic operations \\
+
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+$\bullet$ count\_active using atomic operations \\
+    \begin{center}
+        \includegraphics[scale=0.4]{../pics/gpu_prof1_cut.png}
+        \includegraphics[scale=0.4]{../pics/gpu_prof2_cut.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+$\bullet$ Lots of time spent on cudaMalloc \\
+    \begin{center}
+        \includegraphics[scale=0.4]{../pics/gpu_prof2_cut.png}
+        \includegraphics[scale=0.4]{../pics/gpu_prof3_cut.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Bottlenecks}
+$\bullet$ Reduce number of calls to cudaMalloc \\
+$\bullet$ Optimize push function \\
+$\bullet$ Optimize algorithm to reduce number of iterations \\
+\end{frame}
+
 %%% BOTTLENECKS
 \begin{frame}{Bottlenecks}
 \end{frame}
