@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.11)  13 JUN 2020 23:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.6.11)  14 JUN 2020 21:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/nico/GPGPU-CUDA/doc/report.tex
-(/home/nico/GPGPU-CUDA/doc/report.tex
+**/home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.tex
+(/home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.tex
 LaTeX2e <2020-02-02> patch level 5
 L3 programming layer <2020-06-03> (/usr/local/texlive/2020/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
@@ -289,7 +289,7 @@ Package: glossary-tree 2020/03/19 v4.46 (NLCT)
 File: l3backend-pdfmode.def 2020-06-03 L3 backend support: PDF mode
 \l__kernel_color_stack_int=\count292
 \l__pdf_internal_box=\box52
-) (/home/nico/GPGPU-CUDA/doc/report.aux)
+) (/home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.aux)
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
@@ -330,7 +330,7 @@ LaTeX Info: Redefining \dots on input line 13.
 LaTeX Info: Redefining \up on input line 13.
  [1
 
-{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (/home/nico/GPGPU-CUDA/doc/report.toc)
+{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (/home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.toc)
 \tf@toc=\write3
 \openout3 = `report.toc'.
 
@@ -344,49 +344,129 @@ Underfull \hbox (badness 10000) in paragraph at lines 52--55
  []
 
 [1]
-Underfull \hbox (badness 10000) in paragraph at lines 58--63
+<pics/maxHeight benchmark.PNG, id=20, 413.1435pt x 101.78024pt>
+File: pics/maxHeight benchmark.PNG Graphic file (type png)
+<use pics/maxHeight benchmark.PNG>
+Package pdftex.def Info: pics/maxHeight benchmark.PNG  used on input line 57.
+(pdftex.def)             Requested size: 247.888pt x 61.06859pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 62--67
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 58--63
+Underfull \hbox (badness 10000) in paragraph at lines 62--67
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 66--69
+Underfull \hbox (badness 10000) in paragraph at lines 70--73
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 72--75
+Underfull \hbox (badness 10000) in paragraph at lines 76--79
 
  []
 
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 94--107
+[2 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/maxHeight benchmark.PNG>]
+Underfull \hbox (badness 10000) in paragraph at lines 82--85
+
+ []
+
+<pics/countactive.PNG, id=26, 411.33675pt x 53.60025pt>
+File: pics/countactive.PNG Graphic file (type png)
+<use pics/countactive.PNG>
+Package pdftex.def Info: pics/countactive.PNG  used on input line 87.
+(pdftex.def)             Requested size: 246.80394pt x 32.16039pt.
+<pics/eagle_segmented.PNG, id=27, 295.1025pt x 198.7425pt>
+File: pics/eagle_segmented.PNG Graphic file (type png)
+<use pics/eagle_segmented.PNG>
+Package pdftex.def Info: pics/eagle_segmented.PNG  used on input line 93.
+(pdftex.def)             Requested size: 177.06285pt x 119.24641pt.
+<pics/height 5.PNG, id=28, 296.90926pt x 199.34476pt>
+File: pics/height 5.PNG Graphic file (type png)
+<use pics/height 5.PNG>
+Package pdftex.def Info: pics/height 5.PNG  used on input line 97.
+(pdftex.def)             Requested size: 178.14691pt x 119.60776pt.
+[3 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/countactive.PNG> </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/eagle_segmented.PNG>]
+<pics/plane segmented.PNG, id=34, 295.70474pt x 200.54926pt>
+File: pics/plane segmented.PNG Graphic file (type png)
+<use pics/plane segmented.PNG>
+Package pdftex.def Info: pics/plane segmented.PNG  used on input line 101.
+(pdftex.def)             Requested size: 177.42421pt x 120.33047pt.
+<pics/racing car segmented.PNG, id=35, 295.1025pt x 199.34476pt>
+File: pics/racing car segmented.PNG Graphic file (type png)
+<use pics/racing car segmented.PNG>
+Package pdftex.def Info: pics/racing car segmented.PNG  used on input line 105.
+(pdftex.def)             Requested size: 177.06285pt x 119.60776pt.
+<pics/gpu_diagram.jpg, id=36, 312.16624pt x 573.14125pt>
+File: pics/gpu_diagram.jpg Graphic file (type jpg)
+<use pics/gpu_diagram.jpg>
+Package pdftex.def Info: pics/gpu_diagram.jpg  used on input line 112.
+(pdftex.def)             Requested size: 187.3012pt x 343.8874pt.
+ [4 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/height 5.PNG> </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/plane segmented.PNG> </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/racing car segmented.PNG>]
+<pics/gpu_prof1_cut.png, id=43, 733.23938pt x 216.05719pt>
+File: pics/gpu_prof1_cut.png Graphic file (type png)
+<use pics/gpu_prof1_cut.png>
+Package pdftex.def Info: pics/gpu_prof1_cut.png  used on input line 119.
+(pdftex.def)             Requested size: 366.61879pt x 108.02832pt.
+
+Overfull \hbox (21.61879pt too wide) in paragraph at lines 119--120
+ [] 
+ []
+
+[5 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/gpu_diagram.jpg>]
+<pics/gpu_prof2_cut.png, id=48, 730.22812pt x 220.57407pt>
+File: pics/gpu_prof2_cut.png Graphic file (type png)
+<use pics/gpu_prof2_cut.png>
+Package pdftex.def Info: pics/gpu_prof2_cut.png  used on input line 128.
+(pdftex.def)             Requested size: 365.11316pt x 110.28676pt.
+
+Overfull \hbox (20.11316pt too wide) in paragraph at lines 128--129
+ [] 
+ []
+
+[6 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/gpu_prof1_cut.png> </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/gpu_prof2_cut.png>]
+<pics/gpu_prof3_cut.png, id=52, 730.22812pt x 217.5628pt>
+File: pics/gpu_prof3_cut.png Graphic file (type png)
+<use pics/gpu_prof3_cut.png>
+Package pdftex.def Info: pics/gpu_prof3_cut.png  used on input line 136.
+(pdftex.def)             Requested size: 365.11316pt x 108.78113pt.
+
+Overfull \hbox (20.11316pt too wide) in paragraph at lines 136--137
+ [] 
+ []
+
+<pics/benchmark02.png, id=53, 539.01375pt x 62.2325pt>
+File: pics/benchmark02.png Graphic file (type png)
+<use pics/benchmark02.png>
+Package pdftex.def Info: pics/benchmark02.png  used on input line 142.
+(pdftex.def)             Requested size: 345.0pt x 39.83246pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 148--161
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 94--107
+Underfull \hbox (badness 10000) in paragraph at lines 148--161
 
  []
 
-[3] (/home/nico/GPGPU-CUDA/doc/report.aux) ) 
+[7 </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/gpu_prof3_cut.png> </home/nico/gpu_alternative_version/GPGPU-CUDA/doc/pics/benchmark02.png>] (/home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.aux) ) 
 Here is how much of TeX's memory you used:
- 9955 strings out of 480478
- 168308 string characters out of 5899580
+ 10033 strings out of 480478
+ 170325 string characters out of 5899580
  474934 words of memory out of 5000000
- 25834 multiletter control sequences out of 15000+600000
+ 25897 multiletter control sequences out of 15000+600000
  542591 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 51i,6n,37p,1012b,426s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 51i,6n,37p,1036b,426s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on /home/nico/GPGPU-CUDA/doc/report.pdf (5 pages, 135876 bytes).
+Output written on /home/nico/gpu_alternative_version/GPGPU-CUDA/doc/report.pdf (9 pages, 385217 bytes).
 PDF statistics:
- 53 PDF objects out of 1000 (max. 8388607)
- 37 compressed objects within 1 object stream
+ 85 PDF objects out of 1000 (max. 8388607)
+ 48 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 56 words of extra memory for PDF output out of 10000 (max. 10000000)
 

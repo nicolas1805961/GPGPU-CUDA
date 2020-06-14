@@ -53,6 +53,10 @@ Our implementation soon ran into an infinite loop which remained one of the core
 \\
 It was found that there was actually no infinite loop but the algorithm was very long to terminate as two nodes would often exchange flow between them waiting for one of them to reach the maximum height. To solve this glitch, it was decided to manually lower the maximum height. The maximum height was no longer set to the number of nodes but rather to a low number such as five or ten. This made it possible for our algorithm to terminate.
 
+\begin{center}
+\includegraphics[scale=0.6]{pics/maxHeight benchmark.PNG} 
+\end{center}
+
 \subsection{Issue 2}
 
 An other issue quickly appeared. Using a depth first search to find nodes yielded bad results as every pixel would be set to white.\\
@@ -72,6 +76,34 @@ Lowering the maximum height resulted in a 15, 20 minute running time. This was s
 For a long time we simply checked the height value of each pixel to get the min cut of the graph and thus decide the color of each pixel.\\
 \\
 Since we were not satisfied with our output segmented image, it was decided to change the way we recovered the min cut. Although there were very little explanation about the way the BFS algorithm should have been implemented in NVIDIA slides, the algorithm was successfully implemented. It was a little bit of a disapointment though since this did not change the look of the output segmented image. This led us to understand that this non optimal segmented image resulted from a flaw in the core algorithm (maybe the weights of the links).
+
+\section{optimization}
+
+It was found out that the count active function slowed down the algorithm. \\
+\\
+In order to make it quicker, It was decided to no longer loop on the whole excess flow matrix but rather, to return true as soon as the function found an active node. This slight change required to change the return type of the function from int to bool. It was not necessary to count every active nodes anymore. The program would keep in the main while loop as long as the count active function returned true. This resulted in a slight but noticeable decrease in run time.
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/countactive.PNG} 
+\end{center}
+
+\section{Output segmented images}
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/eagle_segmented.PNG} 
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/height 5.PNG} 
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/plane segmented.PNG} 
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/racing car segmented.PNG} 
+\end{center}
 
 \section{GPU implementation}
 The first GPU implementation is kept as close as possible to the CPU version. The graph structure is instantiated on the CPU just like the CPU version, except that we flattened the matrices on one dimension. The graph structure is then copied on the device, with the addition of a swap matrix used for the relabeling step. Then, the push and relabel kernels are called one after the other, where each thread is representing one node of the graph. The final cut is done just like the CPU version. We didn't have much issues on implementing the GPU version since the CPU version was already functional.
