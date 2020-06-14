@@ -74,18 +74,35 @@ For a long time we simply checked the height value of each pixel to get the min 
 Since we were not satisfied with our output segmented image, it was decided to change the way we recovered the min cut. Although there were very little explanation about the way the BFS algorithm should have been implemented in NVIDIA slides, the algorithm was successfully implemented. It was a little bit of a disapointment though since this did not change the look of the output segmented image. This led us to understand that this non optimal segmented image resulted from a flaw in the core algorithm (maybe the weights of the links).
 
 \section{GPU implementation}
+The first GPU implementation is kept as close as possible to the CPU version. The graph structure is instantiated on the CPU just like the CPU version, except that we flattened the matrices on one dimension. The graph structure is then copied on the device, with the addition of a swap matrix used for the relabeling step. Then, the push and relabel kernels are called one after the other, where each thread is representing one node of the graph. The final cut is done just like the CPU version. We didn't have much issues on implementing the GPU version since the CPU version was already functional.
+
+\begin{center}
+\includegraphics[scale=0.6]{pics/gpu_diagram.jpg}
+\end{center}
 
 \section{Bottlenecks}
+After proceeding to some profiling, we quickly saw that our kernel used to count\_active nodes was a bottleneck because it was taking too much time despite not doing any calculus. Otherwise,  most of the bottlenecks are on the allocation of memory on the device which is hard to optimize unless by allocation the whole structure at once. The push kernel is also a bottleneck since it's checking a lot of conditions. Overall, except from reducing the number of calls to cudaMalloc, we can only solve the bottlenecks with algorithmic optimizations.
+
+\begin{center}
+\includegraphics[scale=0.5]{pics/gpu_prof1_cut.png}
+\end{center}
 
 \section{Enhancements}
 
 \subsection{Enhancement 1}
+We reduced the time spent on the count\_active kernel by removing the atomic operations. We didn't need to count how many nodes were active but instead we just had to check if none were active. So, by using a boolean we allowed concurrent accesses to the variable and reduced the time spent on counting nodes by half.
 
-\subsubsection{Justification}
+\begin{center}
+\includegraphics[scale=0.5]{pics/gpu_prof2_cut.png}
+\end{center}
+\newpage
 
-\subsubsection{Description}
+\subsection{Enhancement 2}
+Since most of the time spent by the API calls is on cudaMalloc, we reduced the number of allocation by 1 to gain 10 ms of execution time.
 
-\subsubsection{Performance comparisons}
+\begin{center}
+\includegraphics[scale=0.5]{pics/gpu_prof3_cut.png}
+\end{center}
 
 \section{Benchmarks recapitulation}
 
