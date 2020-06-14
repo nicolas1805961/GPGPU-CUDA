@@ -176,11 +176,9 @@ int main()
     //generate final image just like CPU version
     int x = graph.m_maxHeight;
 
-    int *outDevice;
+    int *outDevice = swap_heights;
     int *out = (int*)std::malloc(graph.m_maxHeight * sizeof(int));
     memset(out, 0, graph.m_maxHeight * sizeof(int));
-    cudaMalloc((void **)&outDevice, graph.m_maxHeight * sizeof(int));
-    cudaCheckError();
     cudaMemcpy(outDevice, out, graph.m_maxHeight * sizeof(int), cudaMemcpyHostToDevice);
     cudaCheckError();
     setImage<<<numBlocks, blockSize>>>(g, outDevice);
