@@ -239,7 +239,7 @@ int Graph::count_active()
             }
         }
     }
-    std::cout << count << "\n";
+    //std::cout << count << "\n";
     return count;
 }
 
@@ -322,7 +322,7 @@ std::vector<std::vector<bool>> Graph::dfs()
             visited[s.first + 1][s.second] = true;
             queue.push_back(std::make_pair(s.first + 1, s.second));
         }
-        std::cout << queue.size() << "\n";
+        //std::cout << queue.size() << "\n";
     }
     return visited;
 }

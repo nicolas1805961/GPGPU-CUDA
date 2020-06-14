@@ -30,7 +30,7 @@ void count_active_cpu(GraphGPU graph)
         if (graph.m_excessFlow[i] > 0 && graph.m_heights[i] < graph.m_maxHeight)
             count++;
     }
-    std::cout << "cpu_count = " << count << "\n";
+    //std::cout << "cpu_count = " << count << "\n";
 }
 
 //Copy a cpu array onto the device
@@ -137,7 +137,7 @@ int main()
 
     //copy the counter from GPU to CPU
     cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
-    std::cout << "\ncount_gpu = " <<  *count << "\n";
+    //std::cout << "\ncount_gpu = " <<  *count << "\n";
 
     //initialize swap heights
     int* swap_heights;
@@ -170,7 +170,7 @@ int main()
         cudaMemcpy(count, gpu_count, sizeof(int), cudaMemcpyDeviceToHost);
         std::cout << *count << "\n";
     }
-    std::cout << "GraphGPU cut done\n";
+    //std::cout << "GraphGPU cut done\n";
 
 
     //generate final image just like CPU version

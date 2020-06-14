@@ -2,4 +2,4 @@
 
 #include "Graph.hpp"
 
-void graphcut_cpu(Graph &graph);
+void graphcut_cpu(Graph graph);

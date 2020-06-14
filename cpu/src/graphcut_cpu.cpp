@@ -4,7 +4,7 @@
 // Tant qu'il existe un noeud actif et tant que ce noeud a un excess flow,
 // je push et je relabel (je relabel si je ne peux pas push)
 
-void graphcut_cpu(Graph &graph)
+void graphcut_cpu(Graph graph)
 {
     while (graph.count_active() > 0)
     {

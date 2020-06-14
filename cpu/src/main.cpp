@@ -13,8 +13,24 @@ int main()
     Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
 
-    graphcut_cpu(graph);
-    std::cout << "Graph cut done\n";
+    while (graph.count_active() > 0)
+    {
+        for (int i = 0; i < graph.getHeight(); i++)
+        {
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.relabel(i,j);
+            }
+        }
+        for (int i = 0; i < graph.getHeight(); i++)
+        {
+            for (int j = 0; j < graph.getWidth(); j++)
+            {
+                    graph.push(i,j);
+            }
+        }
+    }
+    //std::cout << "Graph cut done\n";
 
     std::vector<std::vector<int>> out =
         std::vector<std::vector<int>>(
@@ -24,7 +40,7 @@ int main()
     auto visited = graph.dfs();
     for (int i = 0; i < graph.getHeight(); i++)
     {
-        std::cout << i << " / " << graph.getHeight() << "\n";
+        //std::cout << i << " / " << graph.getHeight() - 1 << "\n";
         for (int j = 0; j < graph.getWidth(); j++)
         {
             /*std::cout << "i = " << i << ", j = " << j << ", bottom = " << graph.getBottomNeighbourCapacity()[i][j] << ", top = " << graph.getTopNeighbourCapacity()[i][j] << ", left = " << graph.getLeftNeighbourCapacity()[i][j] << ", right = " << graph.getRightNeighbourCapacity()[i][j] << "\n";*/
