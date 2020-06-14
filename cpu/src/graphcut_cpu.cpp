@@ -6,7 +6,7 @@
 
 void graphcut_cpu(Graph graph)
 {
-    while (graph.count_active() > 0)
+    while (graph.count_active())
     {
         for (int i = 0; i < graph.getHeight(); i++)
         {

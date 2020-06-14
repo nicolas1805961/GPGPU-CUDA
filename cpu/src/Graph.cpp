@@ -226,21 +226,19 @@ std::shared_ptr<std::pair<unsigned int, unsigned int>> Graph::isActive()
         return nullptr;
 }
 
-int Graph::count_active()
+bool Graph::count_active()
 {
-    int count = 0;
     for (int i = 0; i < m_height; i++)
     {
         for (int j = 0; j < m_width; j++)
         {
             if (m_excessFlow[i][j] > 0 && m_heights[i][j] < m_maxHeight)
             {
-                count++;
+                return true;
             }
         }
     }
-    //std::cout << count << "\n";
-    return count;
+    return false;
 }
 
 std::vector<std::vector<int>> Graph::getHeights() 

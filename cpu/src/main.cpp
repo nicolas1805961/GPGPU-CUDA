@@ -13,7 +13,7 @@ int main()
     Image imageHelper("inputs/12003_modified.jpg");
     Graph graph(image, imageHelper);
 
-    while (graph.count_active() > 0)
+    while (graph.count_active())
     {
         for (int i = 0; i < graph.getHeight(); i++)
         {
